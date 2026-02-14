@@ -1171,7 +1171,7 @@ const AdminDashboard = () => {
                                         <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-8">
                                             <h4 className="text-xl font-black text-primary uppercase tracking-tighter italic border-b border-muted pb-4">Key Statistics</h4>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                {homeData.stats.map((stat: any, idx: number) => (
+                                                {homeData.stats?.map((stat: any, idx: number) => (
                                                     <div key={idx} className="p-6 bg-muted rounded-[2rem] space-y-4">
                                                         <input
                                                             type="text"
@@ -1679,7 +1679,7 @@ const AdminDashboard = () => {
                                     <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-6">
                                         <h4 className="font-black text-primary uppercase tracking-tighter text-lg">Leadership Information</h4>
                                         <div className="space-y-4">
-                                            {settings.leadership.map((leader: any, idx: number) => (
+                                            {settings.leadership?.map((leader: any, idx: number) => (
                                                 <div key={leader.id} className="p-6 bg-muted rounded-[2.5rem] space-y-4 border border-white/50 shadow-inner">
                                                     <div className="flex justify-between items-center mb-2">
                                                         <p className="text-[8px] font-black text-accent uppercase tracking-widest">{leader.role} Profile</p>
