@@ -9,6 +9,9 @@
     "lint": "eslint",
     "migrate": "tsx --env-file=.env.local scripts/migrate.ts"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
