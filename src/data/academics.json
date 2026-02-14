@@ -1,0 +1,69 @@
+{
+    "levels": [
+        {
+            "id": "1",
+            "title": "Pre-Primary",
+            "description": "A nurturing environment where the foundation of learning is laid through play, exploration, and creative expression.",
+            "features": [
+                "Play-based Learning",
+                "Montessori Methods",
+                "Creative Arts",
+                "Social Skills"
+            ],
+            "image": "/images/pre-primary.webp"
+        },
+        {
+            "id": "2",
+            "title": "Primary Level",
+            "description": "Developing core competencies in language, mathematics, and science while encouraging curiosity and critical thinking.",
+            "features": [
+                "Inquiry-based Learning",
+                "Moral Education",
+                "Language Skills",
+                "Physical Education"
+            ],
+            "image": "/images/primary.webp"
+        },
+        {
+            "id": "3",
+            "title": "Lower Secondary",
+            "description": "Transitioning students towards analytical thinking and specialized subjects, preparing them for higher academic rigor.",
+            "features": [
+                "Advanced Science",
+                "Computer Studies",
+                "Creative Writing",
+                "Leadership Programs"
+            ],
+            "image": "/images/lower-secondary.webp"
+        },
+        {
+            "id": "4",
+            "title": "Secondary Level",
+            "description": "Intensive academic preparation focused on national excellence and real-world application of knowledge.",
+            "features": [
+                "SEE Preparation",
+                "Career Counseling",
+                "Skill-based Workshops",
+                "Competitive Labs"
+            ],
+            "image": "/images/secondary.webp"
+        }
+    ],
+    "facilities": [
+        {
+            "id": "1",
+            "title": "Science Laboratory",
+            "description": "State-of-the-art lab equipment for hands-on experiments in Physics, Chemistry, and Biology."
+        },
+        {
+            "id": "2",
+            "title": "IT & Computer Center",
+            "description": "Modern computer lab with high-speed internet and the latest educational software."
+        },
+        {
+            "id": "3",
+            "title": "Library",
+            "description": "A vast collection of academic books, reference materials, and fiction to foster reading habits."
+        }
+    ]
+}

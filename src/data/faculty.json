@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "name": "Mr. Bal Krishna Khatri",
+    "role": "Chairman",
+    "dept": "Administration"
+  },
+  {
+    "id": "2",
+    "name": "Mr. Moti Lal KC",
+    "role": "Principal",
+    "dept": "Administration",
+    "type": "Faculty",
+    "image": "https://scontent.fpkr1-1.fna.fbcdn.net/v/t39.30808-6/629237683_860515776990702_749217418583439080_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=FBpXk8Bfd2gQ7kNvwHZCayy&_nc_oc=AdnhVvylAqg_86mMBmZ1L0WD8jdd7Sn9lyFe9w-NfzC3ev9uGLqUtVZA351RAN9ZFFYCHml21y8HFc4KM11-v4sZ&_nc_zt=23&_nc_ht=scontent.fpkr1-1.fna&_nc_gid=fLAQXaCnMvZ19qTx7y58iw&oh=00_AfsdGBYY79Z9-Di4-n1C3rKl6fF2MDZ9G7-PfFC7FOABkw&oe=699644DD"
+  },
+  {
+    "id": "3",
+    "name": "Mr. Sunil oli",
+    "role": "Senior Teacher",
+    "dept": "Science , Maths ",
+    "type": "Faculty"
+  }
+]
