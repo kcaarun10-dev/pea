@@ -126,17 +126,68 @@ const AdminDashboard = () => {
                     admissionsPageRes.json()
                 ]);
 
-                // Safely set data with array validation
+                const defaultHome = {
+                    hero: { badge: 'Welcome To', title1: 'Purandhara', title2: 'Academy', titleAccent: 'Everest', description: 'Empowering students with holistic education and values.' },
+                    stats: [{ value: '15+', label: 'Years of Excellence' }, { value: '500+', label: 'Happy Students' }, { value: '100%', label: 'Pass Rate' }],
+                    features: [
+                        { title: 'Quality Education', description: 'International standard curriculum.' },
+                        { title: 'Expert Faculty', description: 'Experienced and dedicated teachers.' },
+                        { title: 'Modern Facilities', description: 'State-of-the-art labs and classrooms.' }
+                    ],
+                    message: { title: 'Principal\'s Message', subtitle: 'Message from Principal', content: 'Welcome to our school...', image: '' },
+                    newsletter: { title: 'Join the', titleAccent: 'PEA Newsletter', description: 'Get the latest school updates...' }
+                };
+
+                const defaultAcademics = {
+                    levels: [
+                        { id: 'pre', title: 'Pre-Primary', description: 'Foundation years focus on play-based learning.', image: '' },
+                        { id: 'basic', title: 'Basic Level', description: 'Building strong core concepts.', image: '' },
+                        { id: 'sec', title: 'Secondary', description: 'Preparing for future careers.', image: '' }
+                    ]
+                };
+
+                const defaultAbout = {
+                    heritage: { title: 'Our Heritage', description: 'Established in 2064 BS...' },
+                    mission: 'To provide quality education...',
+                    vision: 'To be a center of excellence...'
+                };
+
+                const defaultAdmissionsPage = {
+                    batch: '2081/82',
+                    title: 'Open for Admission',
+                    subtitle: 'Join us for a bright future.',
+                    successMessage: 'Thank you for applying!'
+                };
+
+                const defaultSettings = {
+                    schoolName1: 'Purandhara',
+                    schoolName2: 'Everest Academy',
+                    email: 'pea.babai3@gmail.com',
+                    phone: '9857823607',
+                    location: 'Babai-3, Hanspur Dang',
+                    leadership: [
+                        { role: 'Principal', name: 'Mr. Moti Lal KC', bio: 'Dedicated to excellence...', image: '', fb: '' },
+                        { role: 'Chairman', name: 'Mr. Bal Krishna Khatri', bio: 'Leading with vision...', image: '', fb: '' }
+                    ],
+                    socials: { facebook: 'https://facebook.com', youtube: '' }
+                };
+
+                // Safely set data with array validation and defaults
                 setNotices(Array.isArray(noticesData) ? noticesData : []);
                 setAdmissions(Array.isArray(admissionsData) ? admissionsData : []);
                 setGallery(Array.isArray(galleryData) ? galleryData : []);
-                setSettings(settingsData && typeof settingsData === 'object' ? settingsData : {});
+
+                // Seed Settings
+                setSettings(settingsData && typeof settingsData === 'object' && Object.keys(settingsData).length > 0 ? settingsData : defaultSettings);
+
                 setFaculty(Array.isArray(facultyData) ? facultyData : []);
                 setMessages(Array.isArray(feedbackData) ? feedbackData : []);
-                setAcademicData(currentAcademics && typeof currentAcademics === 'object' ? currentAcademics : {});
-                setAboutData(currentAbout && typeof currentAbout === 'object' ? currentAbout : {});
-                setHomeData(currentHome && typeof currentHome === 'object' ? currentHome : {});
-                setAdmissionsPageData(currentAdmissionsPage && typeof currentAdmissionsPage === 'object' ? currentAdmissionsPage : {});
+
+                // Use defaults if Empty or Null
+                setAcademicData(currentAcademics && typeof currentAcademics === 'object' && (currentAcademics as any).levels?.length > 0 ? currentAcademics : defaultAcademics);
+                setAboutData(currentAbout && typeof currentAbout === 'object' && Object.keys(currentAbout).length > 0 ? currentAbout : defaultAbout);
+                setHomeData(currentHome && typeof currentHome === 'object' && Object.keys(currentHome).length > 0 ? currentHome : defaultHome);
+                setAdmissionsPageData(currentAdmissionsPage && typeof currentAdmissionsPage === 'object' && Object.keys(currentAdmissionsPage).length > 0 ? currentAdmissionsPage : defaultAdmissionsPage);
             } catch (error) {
                 console.error('Error fetching data:', error);
                 // Set safe defaults on error
@@ -947,7 +998,7 @@ const AdminDashboard = () => {
                                             transition={{ delay: i * 0.05 }}
                                             className="group relative aspect-square rounded-[2rem] overflow-hidden border-4 border-white shadow-xl hover:shadow-2xl transition-all"
                                         >
-                                            <img src={img.src} alt={img.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                            <img src={img.src || null} alt={img.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent opacity-0 group-hover:opacity-100 transition-all p-6 flex flex-col justify-end">
                                                 <p className="text-white font-black text-xs uppercase tracking-widest truncate mb-3">{img.title}</p>
                                                 <div className="flex gap-2">
@@ -991,7 +1042,7 @@ const AdminDashboard = () => {
                                         {faculty.map((staff, i) => (
                                             <div key={i} className="flex items-center gap-6 p-6 rounded-[2rem] bg-muted/50 hover:bg-white hover:shadow-xl transition-all border border-transparent hover:border-gray-100 group shadow-inner relative">
                                                 {staff.image ? (
-                                                    <img src={staff.image} alt={staff.name} className="w-16 h-16 rounded-2xl object-cover group-hover:scale-110 transition-transform" />
+                                                    <img src={staff.image || null} alt={staff.name} className="w-16 h-16 rounded-2xl object-cover group-hover:scale-110 transition-transform" />
                                                 ) : (
                                                     <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-white font-black text-2xl group-hover:scale-110 transition-transform">{staff.name.charAt(staff.name.lastIndexOf(' ') + 1)}</div>
                                                 )}
@@ -1119,7 +1170,7 @@ const AdminDashboard = () => {
                                                         <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Badge Text</label>
                                                         <input
                                                             type="text"
-                                                            value={homeData.hero.badge}
+                                                            value={homeData.hero?.badge || ''}
                                                             onChange={(e) => setHomeData({ ...homeData, hero: { ...homeData.hero, badge: e.target.value } })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-white/5 border-none outline-none font-bold text-white text-sm"
                                                         />
@@ -1129,7 +1180,7 @@ const AdminDashboard = () => {
                                                             <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Title Part 1</label>
                                                             <input
                                                                 type="text"
-                                                                value={homeData.hero.title1}
+                                                                value={homeData.hero?.title1 || ''}
                                                                 onChange={(e) => setHomeData({ ...homeData, hero: { ...homeData.hero, title1: e.target.value } })}
                                                                 className="w-full px-4 py-3 rounded-xl bg-white/5 border-none outline-none font-bold text-white text-sm"
                                                             />
@@ -1138,7 +1189,7 @@ const AdminDashboard = () => {
                                                             <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Accent Title</label>
                                                             <input
                                                                 type="text"
-                                                                value={homeData.hero.titleAccent}
+                                                                value={homeData.hero?.titleAccent || ''}
                                                                 onChange={(e) => setHomeData({ ...homeData, hero: { ...homeData.hero, titleAccent: e.target.value } })}
                                                                 className="w-full px-4 py-3 rounded-xl bg-white/5 border-none outline-none font-bold text-accent text-sm italic"
                                                             />
@@ -1147,7 +1198,7 @@ const AdminDashboard = () => {
                                                             <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Title Part 2</label>
                                                             <input
                                                                 type="text"
-                                                                value={homeData.hero.title2}
+                                                                value={homeData.hero?.title2 || ''}
                                                                 onChange={(e) => setHomeData({ ...homeData, hero: { ...homeData.hero, title2: e.target.value } })}
                                                                 className="w-full px-4 py-3 rounded-xl bg-white/5 border-none outline-none font-bold text-white text-sm"
                                                             />
@@ -1158,7 +1209,7 @@ const AdminDashboard = () => {
                                                     <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Description</label>
                                                         <textarea
-                                                            value={homeData.hero.description}
+                                                            value={homeData.hero?.description || ''}
                                                             onChange={(e) => setHomeData({ ...homeData, hero: { ...homeData.hero, description: e.target.value } })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-white/5 border-none outline-none font-bold text-white text-xs h-32 resize-none"
                                                         />
@@ -1171,30 +1222,33 @@ const AdminDashboard = () => {
                                         <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-8">
                                             <h4 className="text-xl font-black text-primary uppercase tracking-tighter italic border-b border-muted pb-4">Key Statistics</h4>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                {homeData.stats?.map((stat: any, idx: number) => (
-                                                    <div key={idx} className="p-6 bg-muted rounded-[2rem] space-y-4">
-                                                        <input
-                                                            type="text"
-                                                            value={stat.value}
-                                                            onChange={(e) => {
-                                                                const next = { ...homeData };
-                                                                next.stats[idx].value = e.target.value;
-                                                                setHomeData(next);
-                                                            }}
-                                                            className="w-full px-4 py-3 rounded-xl bg-white border-none outline-none font-black text-primary text-xl text-center"
-                                                        />
-                                                        <input
-                                                            type="text"
-                                                            value={stat.label}
-                                                            onChange={(e) => {
-                                                                const next = { ...homeData };
-                                                                next.stats[idx].label = e.target.value;
-                                                                setHomeData(next);
-                                                            }}
-                                                            className="w-full px-4 py-2 rounded-lg bg-white/50 border-none outline-none font-bold text-gray-400 text-[10px] text-center uppercase tracking-widest"
-                                                        />
-                                                    </div>
-                                                ))}
+                                                {homeData.stats?.map((stat: any, idx: number) => {
+                                                    if (!stat) return null;
+                                                    return (
+                                                        <div key={idx} className="p-6 bg-muted rounded-[2rem] space-y-4">
+                                                            <input
+                                                                type="text"
+                                                                value={stat.value}
+                                                                onChange={(e) => {
+                                                                    const next = { ...homeData };
+                                                                    next.stats[idx].value = e.target.value;
+                                                                    setHomeData(next);
+                                                                }}
+                                                                className="w-full px-4 py-3 rounded-xl bg-white border-none outline-none font-black text-primary text-xl text-center"
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                value={stat.label}
+                                                                onChange={(e) => {
+                                                                    const next = { ...homeData };
+                                                                    next.stats[idx].label = e.target.value;
+                                                                    setHomeData(next);
+                                                                }}
+                                                                className="w-full px-4 py-2 rounded-lg bg-white/50 border-none outline-none font-bold text-gray-400 text-[10px] text-center uppercase tracking-widest"
+                                                            />
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
 
@@ -1206,6 +1260,16 @@ const AdminDashboard = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                                 <div className="space-y-4">
                                                     <div className="space-y-1">
+                                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Subtitle</label>
+                                                        <input
+                                                            type="text"
+                                                            value={homeData.message?.subtitle || ''}
+                                                            onChange={(e) => setHomeData({ ...homeData, message: { ...homeData.message, subtitle: e.target.value } })}
+                                                            className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm"
+                                                            placeholder="Message from Principal"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Main Title</label>
                                                         <input
                                                             type="text"
@@ -1213,6 +1277,7 @@ const AdminDashboard = () => {
                                                             onChange={(e) => setHomeData({ ...homeData, message: { ...homeData.message, title: e.target.value } })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm"
                                                         />
+                                                        <p className="text-[9px] text-accent font-bold mt-1 uppercase tracking-widest">* Principal Name & Role are managed in Site Settings to Leadership</p>
                                                     </div>
                                                     <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Quote Banner</label>
@@ -1246,7 +1311,7 @@ const AdminDashboard = () => {
                                                         <div className="flex gap-4">
                                                             <input
                                                                 type="text"
-                                                                value={homeData.message.image}
+                                                                value={homeData.message?.image || ''}
                                                                 onChange={(e) => setHomeData({ ...homeData, message: { ...homeData.message, image: e.target.value } })}
                                                                 className="flex-1 px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-[10px]"
                                                             />
@@ -1271,7 +1336,7 @@ const AdminDashboard = () => {
                                                             </div>
                                                         </div>
                                                         <div className="w-full aspect-[4/5] bg-muted rounded-3xl overflow-hidden mt-4 relative">
-                                                            <img src={homeData.message.image} alt="Leadership Preview" className="absolute inset-0 w-full h-full object-cover" />
+                                                            <img src={homeData.message?.image || null} alt="Leadership Preview" className="absolute inset-0 w-full h-full object-cover" />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1282,8 +1347,8 @@ const AdminDashboard = () => {
                                         <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-8">
                                             <h4 className="text-xl font-black text-primary uppercase tracking-tighter italic border-b border-muted pb-4">Key Pillars (Why Choose PEA?)</h4>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                                {homeData.features.map((feature: any, idx: number) => (
-                                                    <div key={idx} className="p-6 bg-muted rounded-[23rem] space-y-4 rounded-[2rem]">
+                                                {homeData.features?.map((feature: any, idx: number) => (
+                                                    <div key={idx} className="p-6 bg-muted rounded-[2rem] space-y-4">
                                                         <input
                                                             type="text"
                                                             value={feature.title}
@@ -1305,8 +1370,71 @@ const AdminDashboard = () => {
                                                             className="w-full px-4 py-3 rounded-xl bg-white border-none outline-none font-bold text-gray-400 text-xs h-24 resize-none"
                                                             placeholder="Description"
                                                         />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const next = { ...homeData };
+                                                                next.features.splice(idx, 1);
+                                                                setHomeData(next);
+                                                            }}
+                                                            className="mt-2 text-crimson text-[10px] font-black uppercase tracking-widest flex items-center gap-1 hover:underline w-full justify-center"
+                                                        >
+                                                            <Trash2 size={12} /> Remove
+                                                        </button>
                                                     </div>
                                                 ))}
+                                            </div>
+                                            <div className="flex justify-center border-t border-muted pt-6">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const next = { ...homeData };
+                                                        if (!next.features) next.features = [];
+                                                        next.features.push({ title: 'New Feature', desc: 'Description here.' });
+                                                        setHomeData(next);
+                                                    }}
+                                                    className="flex items-center gap-2 bg-primary/5 text-primary px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary/10 transition-all border border-dashed border-primary/20"
+                                                >
+                                                    <Plus size={16} /> Add Feature Pillar
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Newsletter Editor */}
+                                        <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-8">
+                                            <h4 className="text-xl font-black text-primary uppercase tracking-tighter italic border-b border-muted pb-4">Newsletter Section</h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                <div className="space-y-4">
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Title (First Part)</label>
+                                                        <input
+                                                            type="text"
+                                                            value={homeData.newsletter?.title || ''}
+                                                            onChange={(e) => setHomeData({ ...homeData, newsletter: { ...homeData.newsletter, title: e.target.value } })}
+                                                            className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm"
+                                                            placeholder="Join the"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Title (Accent Part)</label>
+                                                        <input
+                                                            type="text"
+                                                            value={homeData.newsletter?.titleAccent || ''}
+                                                            onChange={(e) => setHomeData({ ...homeData, newsletter: { ...homeData.newsletter, titleAccent: e.target.value } })}
+                                                            className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-accent text-sm"
+                                                            placeholder="PEA Newsletter"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Description</label>
+                                                    <textarea
+                                                        value={homeData.newsletter?.description || ''}
+                                                        onChange={(e) => setHomeData({ ...homeData, newsletter: { ...homeData.newsletter, description: e.target.value } })}
+                                                        className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm h-32 resize-none"
+                                                        placeholder="Get the latest school updates..."
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
 
@@ -1321,64 +1449,67 @@ const AdminDashboard = () => {
                                 ) : pageEditorTab === 'Academics' ? (
                                     <form onSubmit={handleSaveAcademics} className="space-y-12">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                            {academicData.levels.map((level: any, idx: number) => (
-                                                <div key={level.id} className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm space-y-6">
-                                                    <div className="flex justify-between items-center border-b border-muted pb-4">
-                                                        <h4 className="font-black text-primary uppercase tracking-tighter text-lg">{level.title}</h4>
-                                                        <span className="text-[10px] font-black text-accent uppercase tracking-widest bg-accent/5 px-3 py-1 rounded-full">Level Section</span>
-                                                    </div>
-                                                    <div className="space-y-4">
-                                                        <div className="space-y-1">
-                                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Description</label>
-                                                            <textarea
-                                                                value={level.description}
-                                                                onChange={(e) => {
-                                                                    const next = { ...academicData };
-                                                                    next.levels[idx].description = e.target.value;
-                                                                    setAcademicData(next);
-                                                                }}
-                                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm h-32 resize-none"
-                                                            />
+                                            {academicData.levels?.map((level: any, idx: number) => {
+                                                if (!level) return null;
+                                                return (
+                                                    <div key={level.id || idx} className="bg-white p-8 rounded-[3rem] border border-gray-100 shadow-sm space-y-6">
+                                                        <div className="flex justify-between items-center border-b border-muted pb-4">
+                                                            <h4 className="font-black text-primary uppercase tracking-tighter text-lg">{level.title}</h4>
+                                                            <span className="text-[10px] font-black text-accent uppercase tracking-widest bg-accent/5 px-3 py-1 rounded-full">Level Section</span>
                                                         </div>
-                                                        <div className="space-y-2">
-                                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Main Picture</label>
-                                                            <div className="flex gap-4">
-                                                                <input
-                                                                    type="text"
-                                                                    value={level.image}
+                                                        <div className="space-y-4">
+                                                            <div className="space-y-1">
+                                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Description</label>
+                                                                <textarea
+                                                                    value={level.description}
                                                                     onChange={(e) => {
                                                                         const next = { ...academicData };
-                                                                        next.levels[idx].image = e.target.value;
+                                                                        next.levels[idx].description = e.target.value;
                                                                         setAcademicData(next);
                                                                     }}
-                                                                    className="flex-1 px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-xs"
+                                                                    className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm h-32 resize-none"
                                                                 />
-                                                                <div className="relative">
+                                                            </div>
+                                                            <div className="space-y-2">
+                                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Main Picture</label>
+                                                                <div className="flex gap-4">
                                                                     <input
-                                                                        type="file"
-                                                                        accept="image/*"
-                                                                        className="absolute inset-0 opacity-0 cursor-pointer"
-                                                                        onChange={async (e) => {
-                                                                            const file = e.target.files?.[0];
-                                                                            if (file) {
-                                                                                const url = await handleImageUpload(file);
-                                                                                if (url) {
-                                                                                    const next = { ...academicData };
-                                                                                    next.levels[idx].image = url;
-                                                                                    setAcademicData(next);
-                                                                                }
-                                                                            }
+                                                                        type="text"
+                                                                        value={level.image}
+                                                                        onChange={(e) => {
+                                                                            const next = { ...academicData };
+                                                                            next.levels[idx].image = e.target.value;
+                                                                            setAcademicData(next);
                                                                         }}
+                                                                        className="flex-1 px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-xs"
                                                                     />
-                                                                    <button type="button" className="h-full px-6 bg-primary text-white rounded-2xl hover:bg-primary/90 transition-all">
-                                                                        <Upload size={18} />
-                                                                    </button>
+                                                                    <div className="relative">
+                                                                        <input
+                                                                            type="file"
+                                                                            accept="image/*"
+                                                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                                                            onChange={async (e) => {
+                                                                                const file = e.target.files?.[0];
+                                                                                if (file) {
+                                                                                    const url = await handleImageUpload(file);
+                                                                                    if (url) {
+                                                                                        const next = { ...academicData };
+                                                                                        next.levels[idx].image = url;
+                                                                                        setAcademicData(next);
+                                                                                    }
+                                                                                }
+                                                                            }}
+                                                                        />
+                                                                        <button type="button" className="h-full px-6 bg-primary text-white rounded-2xl hover:bg-primary/90 transition-all">
+                                                                            <Upload size={18} />
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                         <button
                                             type="submit"
@@ -1511,7 +1642,7 @@ const AdminDashboard = () => {
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">School Logo</label>
                                                     <input
                                                         type="text"
-                                                        value={settings.logo}
+                                                        value={settings?.logo || ''}
                                                         onChange={(e) => setSettings({ ...settings, logo: e.target.value })}
                                                         className="w-full px-6 py-3 rounded-xl bg-muted border-none outline-none font-bold text-primary text-xs"
                                                     />
@@ -1534,7 +1665,7 @@ const AdminDashboard = () => {
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Name Part 1</label>
                                                     <input
                                                         type="text"
-                                                        value={settings.schoolName1}
+                                                        value={settings?.schoolName1 || ''}
                                                         onChange={(e) => setSettings({ ...settings, schoolName1: e.target.value })}
                                                         className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary"
                                                     />
@@ -1543,7 +1674,7 @@ const AdminDashboard = () => {
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Name Part 2 (Accent)</label>
                                                     <input
                                                         type="text"
-                                                        value={settings.schoolName2}
+                                                        value={settings?.schoolName2 || ''}
                                                         onChange={(e) => setSettings({ ...settings, schoolName2: e.target.value })}
                                                         className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-accent italic"
                                                     />
@@ -1554,7 +1685,7 @@ const AdminDashboard = () => {
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Established Year</label>
                                                     <input
                                                         type="text"
-                                                        value={settings.established}
+                                                        value={settings?.established || ''}
                                                         onChange={(e) => setSettings({ ...settings, established: e.target.value })}
                                                         className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-xs"
                                                     />
@@ -1563,7 +1694,7 @@ const AdminDashboard = () => {
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Footer Slogan</label>
                                                     <input
                                                         type="text"
-                                                        value={settings.footerSlogan}
+                                                        value={settings?.footerSlogan || ''}
                                                         onChange={(e) => setSettings({ ...settings, footerSlogan: e.target.value })}
                                                         className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-xs"
                                                     />
@@ -1572,7 +1703,7 @@ const AdminDashboard = () => {
                                             <div className="space-y-1">
                                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">School Description</label>
                                                 <textarea
-                                                    value={settings.description}
+                                                    value={settings?.description || ''}
                                                     onChange={(e) => setSettings({ ...settings, description: e.target.value })}
                                                     className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-xs h-24 resize-none"
                                                 />
@@ -1587,7 +1718,7 @@ const AdminDashboard = () => {
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Official Email</label>
                                                     <input
                                                         type="email"
-                                                        value={settings.email}
+                                                        value={settings?.email || ''}
                                                         onChange={(e) => setSettings({ ...settings, email: e.target.value })}
                                                         className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-xs"
                                                     />
@@ -1596,7 +1727,7 @@ const AdminDashboard = () => {
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Primary Phone</label>
                                                     <input
                                                         type="text"
-                                                        value={settings.phone}
+                                                        value={settings?.phone || ''}
                                                         onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
                                                         className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-xs"
                                                     />
@@ -1607,7 +1738,7 @@ const AdminDashboard = () => {
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">WhatsApp Number</label>
                                                     <input
                                                         type="text"
-                                                        value={settings.whatsapp}
+                                                        value={settings?.whatsapp || ''}
                                                         onChange={(e) => setSettings({ ...settings, whatsapp: e.target.value })}
                                                         className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-xs"
                                                     />
@@ -1616,16 +1747,38 @@ const AdminDashboard = () => {
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Office Hours</label>
                                                     <input
                                                         type="text"
-                                                        value={settings.officeHours}
+                                                        value={settings?.officeHours || ''}
                                                         onChange={(e) => setSettings({ ...settings, officeHours: e.target.value })}
                                                         className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-xs"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Address / Location</label>
+                                                    <input
+                                                        type="text"
+                                                        value={settings?.location || ''}
+                                                        onChange={(e) => setSettings({ ...settings, location: e.target.value })}
+                                                        className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-xs"
+                                                        placeholder="e.g. Babai-3, Hanspur Dang"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Google Map Embed URL (src only)</label>
+                                                    <input
+                                                        type="text"
+                                                        value={settings?.mapUrl || ''}
+                                                        onChange={(e) => setSettings({ ...settings, mapUrl: e.target.value })}
+                                                        className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-xs"
+                                                        placeholder="https://www.google.com/maps/embed?pb=..."
                                                     />
                                                 </div>
                                             </div>
                                             <div className="space-y-1">
                                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Contact Intro Text</label>
                                                 <textarea
-                                                    value={settings.contactIntro}
+                                                    value={settings?.contactIntro || ''}
                                                     onChange={(e) => setSettings({ ...settings, contactIntro: e.target.value })}
                                                     className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-xs h-20 resize-none"
                                                 />
@@ -1635,7 +1788,7 @@ const AdminDashboard = () => {
                                     <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-6">
                                         <h4 className="font-black text-primary uppercase tracking-tighter text-lg">Social Connections</h4>
                                         <div className="grid grid-cols-2 gap-4">
-                                            {['facebook', 'instagram', 'linkedin', 'youtube'].map((platform) => (
+                                            {['facebook', 'instagram', 'twitter', 'linkedin', 'youtube'].map((platform) => (
                                                 <div key={platform} className="space-y-1">
                                                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest capitalize">{platform} URL</label>
                                                     <input
@@ -1660,7 +1813,7 @@ const AdminDashboard = () => {
                                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Google Map Embed URL</label>
                                                 <input
                                                     type="text"
-                                                    value={settings.mapUrl}
+                                                    value={settings?.mapUrl || ''}
                                                     onChange={(e) => setSettings({ ...settings, mapUrl: e.target.value })}
                                                     className="w-full px-6 py-3 rounded-xl bg-muted border-none outline-none font-bold text-primary text-[10px]"
                                                 />
@@ -1669,7 +1822,7 @@ const AdminDashboard = () => {
                                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Physical Address</label>
                                                 <input
                                                     type="text"
-                                                    value={settings.location}
+                                                    value={settings?.location || ''}
                                                     onChange={(e) => setSettings({ ...settings, location: e.target.value })}
                                                     className="w-full px-6 py-3 rounded-xl bg-muted border-none outline-none font-bold text-primary text-xs"
                                                 />
@@ -1679,96 +1832,127 @@ const AdminDashboard = () => {
                                     <div className="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-sm space-y-6">
                                         <h4 className="font-black text-primary uppercase tracking-tighter text-lg">Leadership Information</h4>
                                         <div className="space-y-4">
-                                            {settings.leadership?.map((leader: any, idx: number) => (
-                                                <div key={leader.id} className="p-6 bg-muted rounded-[2.5rem] space-y-4 border border-white/50 shadow-inner">
-                                                    <div className="flex justify-between items-center mb-2">
-                                                        <p className="text-[8px] font-black text-accent uppercase tracking-widest">{leader.role} Profile</p>
-                                                        <div className="w-12 h-12 rounded-xl bg-white overflow-hidden border-2 border-white shadow-sm">
-                                                            <img src={leader.image} alt="Preview" className="w-full h-full object-cover" />
-                                                        </div>
-                                                    </div>
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                        <div className="space-y-1">
-                                                            <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
-                                                            <input
-                                                                type="text"
-                                                                value={leader.name}
-                                                                onChange={(e) => {
-                                                                    const newLeadership = [...settings.leadership];
-                                                                    newLeadership[idx].name = e.target.value;
-                                                                    setSettings({ ...settings, leadership: newLeadership });
-                                                                }}
-                                                                className="w-full px-4 py-3 rounded-xl bg-white border-none outline-none font-bold text-primary text-sm shadow-sm"
-                                                                placeholder="Name"
-                                                            />
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest ml-1">Facebook URL</label>
-                                                            <input
-                                                                type="text"
-                                                                value={leader.fb}
-                                                                onChange={(e) => {
-                                                                    const newLeadership = [...settings.leadership];
-                                                                    newLeadership[idx].fb = e.target.value;
-                                                                    setSettings({ ...settings, leadership: newLeadership });
-                                                                }}
-                                                                className="w-full px-4 py-3 rounded-xl bg-white border-none outline-none font-bold text-primary text-xs shadow-sm"
-                                                                placeholder="Facebook URL"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="space-y-1">
-                                                        <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest ml-1">Profile Bio</label>
-                                                        <textarea
-                                                            value={leader.bio}
-                                                            onChange={(e) => {
-                                                                const newLeadership = [...settings.leadership];
-                                                                newLeadership[idx].bio = e.target.value;
-                                                                setSettings({ ...settings, leadership: newLeadership });
+                                            {settings.leadership?.map((leader: any, idx: number) => {
+                                                if (!leader) return null;
+                                                return (
+                                                    <div key={leader.id || idx} className="p-6 bg-muted rounded-[2.5rem] space-y-4 border border-white/50 shadow-inner relative group">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const next = { ...settings };
+                                                                next.leadership.splice(idx, 1);
+                                                                setSettings(next);
                                                             }}
-                                                            className="w-full px-4 py-3 rounded-xl bg-white border-none outline-none font-bold text-primary text-xs shadow-sm h-20 resize-none"
-                                                            placeholder="Personal mission or bio..."
-                                                        />
-                                                    </div>
-                                                    <div className="space-y-1">
-                                                        <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest ml-1">Profile Photo</label>
-                                                        <div className="flex gap-3">
-                                                            <input
-                                                                type="text"
-                                                                value={leader.image}
+                                                            className="absolute top-4 right-4 text-crimson hover:bg-white p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 z-10"
+                                                            title="Remove Profile"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <p className="text-[8px] font-black text-accent uppercase tracking-widest">{leader.role} Profile</p>
+                                                            <div className="w-12 h-12 rounded-xl bg-white overflow-hidden border-2 border-white shadow-sm">
+                                                                <img src={leader.image || null} alt="Preview" className="w-full h-full object-cover" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div className="space-y-1">
+                                                                <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={leader.name}
+                                                                    onChange={(e) => {
+                                                                        const newLeadership = [...settings.leadership];
+                                                                        newLeadership[idx].name = e.target.value;
+                                                                        setSettings({ ...settings, leadership: newLeadership });
+                                                                    }}
+                                                                    className="w-full px-4 py-3 rounded-xl bg-white border-none outline-none font-bold text-primary text-sm shadow-sm"
+                                                                    placeholder="Name"
+                                                                />
+                                                            </div>
+                                                            <div className="space-y-1">
+                                                                <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest ml-1">Facebook URL</label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={leader.fb}
+                                                                    onChange={(e) => {
+                                                                        const newLeadership = [...settings.leadership];
+                                                                        newLeadership[idx].fb = e.target.value;
+                                                                        setSettings({ ...settings, leadership: newLeadership });
+                                                                    }}
+                                                                    className="w-full px-4 py-3 rounded-xl bg-white border-none outline-none font-bold text-primary text-xs shadow-sm"
+                                                                    placeholder="Facebook URL"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest ml-1">Profile Bio</label>
+                                                            <textarea
+                                                                value={leader.bio}
                                                                 onChange={(e) => {
                                                                     const newLeadership = [...settings.leadership];
-                                                                    newLeadership[idx].image = e.target.value;
+                                                                    newLeadership[idx].bio = e.target.value;
                                                                     setSettings({ ...settings, leadership: newLeadership });
                                                                 }}
-                                                                className="flex-1 px-4 py-2 rounded-xl bg-white border-none outline-none font-bold text-primary text-[10px] shadow-sm"
+                                                                className="w-full px-4 py-3 rounded-xl bg-white border-none outline-none font-bold text-primary text-xs shadow-sm h-20 resize-none"
+                                                                placeholder="Personal mission or bio..."
                                                             />
-                                                            <div className="relative">
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest ml-1">Profile Photo</label>
+                                                            <div className="flex gap-3">
                                                                 <input
-                                                                    type="file"
-                                                                    accept="image/*"
-                                                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                                                    onChange={async (e) => {
-                                                                        const file = e.target.files?.[0];
-                                                                        if (file) {
-                                                                            const url = await handleImageUpload(file);
-                                                                            if (url) {
-                                                                                const newLeadership = [...settings.leadership];
-                                                                                newLeadership[idx].image = url;
-                                                                                setSettings({ ...settings, leadership: newLeadership });
-                                                                            }
-                                                                        }
+                                                                    type="text"
+                                                                    value={leader.image}
+                                                                    onChange={(e) => {
+                                                                        const newLeadership = [...settings.leadership];
+                                                                        newLeadership[idx].image = e.target.value;
+                                                                        setSettings({ ...settings, leadership: newLeadership });
                                                                     }}
+                                                                    className="flex-1 px-4 py-2 rounded-xl bg-white border-none outline-none font-bold text-primary text-[10px] shadow-sm"
                                                                 />
-                                                                <button type="button" className="h-full px-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all">
-                                                                    <Upload size={14} />
-                                                                </button>
+                                                                <div className="relative">
+                                                                    <input
+                                                                        type="file"
+                                                                        accept="image/*"
+                                                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                                                        onChange={async (e) => {
+                                                                            const file = e.target.files?.[0];
+                                                                            if (file) {
+                                                                                const url = await handleImageUpload(file);
+                                                                                if (url) {
+                                                                                    const newLeadership = [...settings.leadership];
+                                                                                    newLeadership[idx].image = url;
+                                                                                    setSettings({ ...settings, leadership: newLeadership });
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                    <button type="button" className="h-full px-4 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all">
+                                                                        <Upload size={14} />
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
+                                        <div className="flex justify-center border-t border-muted pt-6">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const next = { ...settings };
+                                                    if (!next.leadership) next.leadership = [];
+                                                    next.leadership.push({ role: 'New Role', name: 'New Name', bio: '', image: '', fb: '' });
+                                                    setSettings(next);
+                                                }}
+                                                className="flex items-center gap-2 bg-primary/5 text-primary px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-primary/10 transition-all border border-dashed border-primary/20"
+                                            >
+                                                <Plus size={16} /> Add Leader Profile
+                                            </button>
+                                        </div>
+
                                         <button
                                             type="submit"
                                             disabled={isSaving}

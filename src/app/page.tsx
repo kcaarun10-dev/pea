@@ -282,8 +282,8 @@ export default function Home() {
           <div className="bg-accent rounded-[3.5rem] p-12 md:p-20 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
             <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-black text-primary tracking-tighter uppercase mb-6 leading-none">Join the <br /> <span className="italic">PEA Newsletter</span></h2>
-              <p className="text-primary/70 font-medium text-lg mb-10 max-w-xl mx-auto">Get the latest school updates, event invitations, and academic news delivered to your inbox.</p>
+              <h2 className="text-4xl md:text-5xl font-black text-primary tracking-tighter uppercase mb-6 leading-none">{homeData?.newsletter?.title || 'Join the'} <br /> <span className="italic">{homeData?.newsletter?.titleAccent || 'PEA Newsletter'}</span></h2>
+              <p className="text-primary/70 font-medium text-lg mb-10 max-w-xl mx-auto">{homeData?.newsletter?.description || 'Get the latest school updates, event invitations, and academic news delivered to your inbox.'}</p>
               <form className="flex flex-col md:flex-row gap-4 max-w-lg mx-auto">
                 <input
                   type="email"
