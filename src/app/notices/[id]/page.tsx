@@ -18,7 +18,7 @@ const NoticeDetail = () => {
             try {
                 const res = await fetch('/api/notices');
                 const data = await res.json();
-                const foundNotice = data.find((n: any) => n.id === id);
+                const foundNotice = Array.isArray(data) ? data.find((n: any) => n.id === id) : null;
                 setNotice(foundNotice);
             } catch (error) {
                 console.error('Error fetching notice:', error);
@@ -108,7 +108,7 @@ const NoticeDetail = () => {
                     className="bg-white rounded-[3.5rem] shadow-xl p-8 md:p-16 border border-gray-100"
                 >
                     <div className="prose prose-xl max-w-none prose-primary text-muted-foreground font-medium leading-[1.8] italic">
-                        {notice.content.split('\n').map((para: string, i: number) => (
+                        {(notice?.content || '').split('\n').map((para: string, i: number) => (
                             <p key={i} className="mb-6">{para}</p>
                         ))}
                     </div>

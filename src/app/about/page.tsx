@@ -13,10 +13,13 @@ const AboutPage = () => {
         fetch('/api/about')
             .then(res => res.json())
             .then(data => {
-                setAboutData(data);
+                setAboutData(data && typeof data === 'object' && !data.error ? data : {});
                 setLoading(false);
             })
-            .catch(() => setLoading(false));
+            .catch(() => {
+                setAboutData({});
+                setLoading(false);
+            });
     }, []);
 
     if (loading || !aboutData) return (

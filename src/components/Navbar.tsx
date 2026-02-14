@@ -11,7 +11,10 @@ const Navbar = () => {
     const [settings, setSettings] = useState<any>(null);
 
     useEffect(() => {
-        fetch('/api/settings').then(res => res.json()).then(data => setSettings(data));
+        fetch('/api/settings')
+            .then(res => res.json())
+            .then(data => setSettings(data && typeof data === 'object' && !data.error ? data : {}))
+            .catch(() => setSettings({}));
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
         };

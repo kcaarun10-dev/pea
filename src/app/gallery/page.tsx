@@ -15,16 +15,21 @@ const GalleryPage = () => {
         fetch('/api/gallery')
             .then(res => res.json())
             .then(data => {
-                setImages(data);
+                setImages(Array.isArray(data) ? data : []);
+                setLoading(false);
+            })
+            .catch(() => {
+                setImages([]);
                 setLoading(false);
             });
     }, []);
 
-    const categories = ['All', ...Array.from(new Set((images || []).map(img => img.category))).filter(Boolean)];
+    const safeImages = Array.isArray(images) ? images : [];
+    const categories = ['All', ...Array.from(new Set(safeImages.map(img => img?.category))).filter(Boolean)];
 
     const filteredImages = activeCategory === 'All'
-        ? images
-        : images.filter(img => img.category === activeCategory);
+        ? safeImages
+        : safeImages.filter(img => img?.category === activeCategory);
 
     if (loading) return (
         <div className="pt-40 pb-20 text-center">

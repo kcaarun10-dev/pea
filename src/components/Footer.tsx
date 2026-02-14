@@ -9,7 +9,10 @@ const Footer = () => {
     const [settings, setSettings] = useState<any>(null);
 
     useEffect(() => {
-        fetch('/api/settings').then(res => res.json()).then(data => setSettings(data));
+        fetch('/api/settings')
+            .then(res => res.json())
+            .then(data => setSettings(data && typeof data === 'object' && !data.error ? data : {}))
+            .catch(() => setSettings({}));
     }, []);
     return (
         <footer className="relative bg-primary text-white pt-24 pb-12 overflow-hidden">

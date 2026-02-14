@@ -32,10 +32,13 @@ const FacultyPage = () => {
         fetch('/api/faculty')
             .then(res => res.json())
             .then(data => {
-                setFaculty(data);
+                setFaculty(Array.isArray(data) ? data : []);
                 setLoading(false);
             })
-            .catch(() => setLoading(false));
+            .catch(() => {
+                setFaculty([]);
+                setLoading(false);
+            });
     }, []);
 
     if (loading) return (
@@ -47,8 +50,8 @@ const FacultyPage = () => {
         </div>
     );
 
-    const administration = faculty.filter(f => f.dept === 'Administration' || f.role === 'Chairman' || f.role === 'Principal');
-    const teachers = faculty.filter(f => !administration.find(a => a.id === f.id));
+    const administration = (faculty || []).filter(f => f && (f.dept === 'Administration' || f.role === 'Chairman' || f.role === 'Principal'));
+    const teachers = (faculty || []).filter(f => f && !administration.find(a => a.id === f.id));
 
     return (
         <div className="pt-24 min-h-screen bg-zinc-50">

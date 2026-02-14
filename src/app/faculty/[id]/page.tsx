@@ -48,7 +48,7 @@ const FacultyDetailPage = () => {
         fetch('/api/faculty')
             .then(res => res.json())
             .then(data => {
-                const found = data.find((f: FacultyMember) => f.id === id);
+                const found = Array.isArray(data) ? data.find((f: FacultyMember) => f.id === id) : null;
                 setMember(found || null);
                 setLoading(false);
             })
@@ -285,7 +285,7 @@ const FacultyDetailPage = () => {
                                     Areas of Expertise
                                 </h3>
                                 <div className="flex flex-wrap gap-3">
-                                    {member.specialties.split(',').map((s: string) => (
+                                    {(member.specialties || '').split(',').map((s: string) => (
                                         <span key={s} className="bg-white px-6 py-2.5 rounded-2xl text-sm font-black text-primary border border-accent/10 shadow-sm shadow-accent/5">
                                             {s.trim()}
                                         </span>

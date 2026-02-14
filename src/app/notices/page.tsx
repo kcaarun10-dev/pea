@@ -14,7 +14,11 @@ const NoticesPage = () => {
         fetch('/api/notices')
             .then(res => res.json())
             .then(data => {
-                setNotices(data);
+                setNotices(Array.isArray(data) ? data : []);
+                setLoading(false);
+            })
+            .catch(() => {
+                setNotices([]);
                 setLoading(false);
             });
     }, []);
@@ -101,7 +105,7 @@ const NoticesPage = () => {
                             </motion.div>
                         ))}
 
-                        {notices.length === 0 && (
+                        {(notices || []).length === 0 && (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}

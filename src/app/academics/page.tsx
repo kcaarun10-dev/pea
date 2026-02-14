@@ -32,10 +32,13 @@ const AcademicsPage = () => {
         fetch('/api/academics')
             .then(res => res.json())
             .then(data => {
-                setAcademicData(data);
+                setAcademicData(data && typeof data === 'object' && !data.error ? data : {});
                 setLoading(false);
             })
-            .catch(() => setLoading(false));
+            .catch(() => {
+                setAcademicData({});
+                setLoading(false);
+            });
     }, []);
 
     if (loading || !academicData) return (
