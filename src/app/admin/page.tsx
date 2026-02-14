@@ -92,18 +92,30 @@ const AdminDashboard = () => {
                     admissionsPageRes.json()
                 ]);
 
-                setNotices(noticesData);
-                setAdmissions(admissionsData);
-                setGallery(galleryData);
-                setSettings(settingsData);
-                setFaculty(facultyData);
-                setMessages(feedbackData);
-                setAcademicData(currentAcademics);
-                setAboutData(currentAbout);
-                setHomeData(currentHome);
-                setAdmissionsPageData(currentAdmissionsPage);
+                // Safely set data with array validation
+                setNotices(Array.isArray(noticesData) ? noticesData : []);
+                setAdmissions(Array.isArray(admissionsData) ? admissionsData : []);
+                setGallery(Array.isArray(galleryData) ? galleryData : []);
+                setSettings(settingsData && typeof settingsData === 'object' ? settingsData : {});
+                setFaculty(Array.isArray(facultyData) ? facultyData : []);
+                setMessages(Array.isArray(feedbackData) ? feedbackData : []);
+                setAcademicData(currentAcademics && typeof currentAcademics === 'object' ? currentAcademics : {});
+                setAboutData(currentAbout && typeof currentAbout === 'object' ? currentAbout : {});
+                setHomeData(currentHome && typeof currentHome === 'object' ? currentHome : {});
+                setAdmissionsPageData(currentAdmissionsPage && typeof currentAdmissionsPage === 'object' ? currentAdmissionsPage : {});
             } catch (error) {
                 console.error('Error fetching data:', error);
+                // Set safe defaults on error
+                setNotices([]);
+                setAdmissions([]);
+                setGallery([]);
+                setSettings({});
+                setFaculty([]);
+                setMessages([]);
+                setAcademicData({});
+                setAboutData({});
+                setHomeData({});
+                setAdmissionsPageData({});
             } finally {
                 setLoading(false);
             }
