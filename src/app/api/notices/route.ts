@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import Notice from '@/models/Notice';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, getDoc } from 'firebase/firestore';
 
 export async function GET() {
     try {
-        await connectDB();
-        const notices = await Notice.find({}).sort({ createdAt: -1 });
-        const mappedNotices = notices.map(notice => ({
-            ...notice.toObject(),
-            id: notice._id.toString()
+        const q = query(collection(db, 'notices'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const notices = querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
         }));
-        return NextResponse.json(mappedNotices);
+        return NextResponse.json(notices);
     } catch (error) {
         console.error('Fetch error:', error);
         return NextResponse.json([], { status: 500 });
@@ -19,18 +19,20 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        await connectDB();
         const data = await request.json();
-
         const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const newNotice = await Notice.create({
+
+        const docRef = await addDoc(collection(db, 'notices'), {
             ...data,
-            date: data.date || date
+            date: data.date || date,
+            createdAt: new Date().toISOString()
         });
 
+        const newDocSnap = await getDoc(docRef);
+
         return NextResponse.json({
-            ...newNotice.toObject(),
-            id: newNotice._id.toString()
+            ...newDocSnap.data(),
+            id: docRef.id
         });
     } catch (error) {
         console.error('Create error:', error);
@@ -40,18 +42,17 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        await connectDB();
         const data = await request.json();
         const { id, ...updateData } = data;
 
-        const updatedNotice = await Notice.findByIdAndUpdate(id, updateData, { new: true });
-        if (!updatedNotice) {
-            return NextResponse.json({ error: 'Notice not found' }, { status: 404 });
-        }
+        const docRef = doc(db, 'notices', id);
+        await updateDoc(docRef, updateData);
+
+        const updatedDocSnap = await getDoc(docRef);
 
         return NextResponse.json({
-            ...updatedNotice.toObject(),
-            id: updatedNotice._id.toString()
+            ...updatedDocSnap.data(),
+            id: id
         });
     } catch (error) {
         console.error('Update error:', error);
@@ -61,12 +62,9 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
     try {
-        await connectDB();
         const { id } = await request.json();
-        const deletedNotice = await Notice.findByIdAndDelete(id);
-        if (!deletedNotice) {
-            return NextResponse.json({ error: 'Notice not found' }, { status: 404 });
-        }
+        const docRef = doc(db, 'notices', id);
+        await deleteDoc(docRef);
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Delete error:', error);

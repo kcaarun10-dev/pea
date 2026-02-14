@@ -48,7 +48,7 @@ const NoticesPage = () => {
                     <div className="space-y-4">
                         {(notices || []).map((notice, idx) => (
                             <motion.div
-                                key={notice.id || idx}
+                                key={notice?.id || idx}
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.1 }}
@@ -56,27 +56,27 @@ const NoticesPage = () => {
                             >
                                 <div className="flex flex-col md:flex-row gap-6 p-6">
                                     <div className="md:w-32 h-32 bg-muted rounded-2xl flex flex-col items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-500">
-                                        <span className="text-3xl font-black">{notice.date?.split(' ')[1] || '??'}</span>
-                                        <span className="text-xs font-black uppercase tracking-widest">{notice.date?.split(' ')[0] || 'Date'}</span>
+                                        <span className="text-3xl font-black">{notice?.date?.split(' ')[1] || '??'}</span>
+                                        <span className="text-xs font-black uppercase tracking-widest">{notice?.date?.split(' ')[0] || 'Date'}</span>
                                     </div>
                                     <div className="flex-1 space-y-3">
                                         <div className="flex items-center gap-3">
                                             <span className="bg-accent/10 text-accent px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-                                                {notice.category}
+                                                {notice?.category || 'General'}
                                             </span>
                                             <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1">
                                                 <Clock size={12} /> 10:00 AM
                                             </span>
                                         </div>
-                                        <Link href={`/notices/${notice.id}`} target="_blank" className="hover:text-accent transition-colors">
+                                        <Link href={`/notices/${notice?.id || '#'}`} target="_blank" className="hover:text-accent transition-colors">
                                             <h2 className="text-2xl font-black text-primary tracking-tighter uppercase">
-                                                {notice.title}
+                                                {notice?.title || 'Notice Title'}
                                             </h2>
                                         </Link>
                                         <p className="text-muted-foreground font-medium leading-relaxed line-clamp-2 italic">
-                                            {notice.content}
+                                            {notice?.content || 'Description not available.'}
                                         </p>
-                                        {notice.image && (
+                                        {notice?.image && (
                                             <Link href={`/notices/${notice.id}`} target="_blank" className="relative block w-full h-48 md:h-64 rounded-3xl overflow-hidden mt-4 border border-gray-100">
                                                 <Image
                                                     src={notice.image}
@@ -88,12 +88,12 @@ const NoticesPage = () => {
                                         )}
                                     </div>
                                     <div className="flex md:flex-col items-center justify-center gap-3">
-                                        {notice.pdf && (
+                                        {notice?.pdf && (
                                             <button className="p-4 bg-crimson text-white rounded-2xl hover:scale-110 transition-transform shadow-lg shadow-crimson/20">
                                                 <Download size={24} />
                                             </button>
                                         )}
-                                        <Link href={`/notices/${notice.id}`} target="_blank" className="p-4 bg-primary text-white rounded-2xl hover:scale-110 transition-transform shadow-lg shadow-primary/20 flex items-center justify-center">
+                                        <Link href={`/notices/${notice?.id || '#'}`} target="_blank" className="p-4 bg-primary text-white rounded-2xl hover:scale-110 transition-transform shadow-lg shadow-primary/20 flex items-center justify-center">
                                             <ArrowRight size={24} />
                                         </Link>
                                     </div>

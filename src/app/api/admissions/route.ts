@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import Admission from '@/models/Admission';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, getDoc } from 'firebase/firestore';
 
 export async function GET() {
     try {
-        await connectDB();
-        const admissions = await Admission.find({}).sort({ createdAt: -1 });
-        const mappedAdmissions = admissions.map(admission => ({
-            ...admission.toObject(),
-            id: admission._id.toString()
+        const q = query(collection(db, 'admissions'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const admissions = querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
         }));
-        return NextResponse.json(mappedAdmissions);
+        return NextResponse.json(admissions);
     } catch (error) {
         console.error('Fetch error:', error);
         return NextResponse.json([], { status: 500 });
@@ -19,17 +19,23 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        await connectDB();
         const formData = await request.json();
         const date = new Date().toISOString().split('T')[0];
 
-        const newAdmission = await Admission.create({
+        const docRef = await addDoc(collection(db, 'admissions'), {
             ...formData,
             status: 'Pending',
-            date: formData.date || date
+            date: formData.date || date,
+            createdAt: new Date().toISOString()
         });
 
-        return NextResponse.json({ success: true, id: newAdmission._id.toString() });
+        const newDocSnap = await getDoc(docRef);
+
+        return NextResponse.json({
+            success: true,
+            id: docRef.id,
+            ...newDocSnap.data()
+        });
     } catch (error) {
         console.error('Create error:', error);
         return NextResponse.json({ error: 'Failed to submit admission' }, { status: 500 });
@@ -38,18 +44,17 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        await connectDB();
         const data = await request.json();
         const { id, ...updateData } = data;
 
-        const updatedAdmission = await Admission.findByIdAndUpdate(id, updateData, { new: true });
-        if (!updatedAdmission) {
-            return NextResponse.json({ error: 'Admission not found' }, { status: 404 });
-        }
+        const docRef = doc(db, 'admissions', id);
+        await updateDoc(docRef, updateData);
+
+        const updatedDocSnap = await getDoc(docRef);
 
         return NextResponse.json({
-            ...updatedAdmission.toObject(),
-            id: updatedAdmission._id.toString()
+            ...updatedDocSnap.data(),
+            id: id
         });
     } catch (error) {
         console.error('Update error:', error);
@@ -59,12 +64,9 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
     try {
-        await connectDB();
         const { id } = await request.json();
-        const deletedAdmission = await Admission.findByIdAndDelete(id);
-        if (!deletedAdmission) {
-            return NextResponse.json({ error: 'Admission not found' }, { status: 404 });
-        }
+        const docRef = doc(db, 'admissions', id);
+        await deleteDoc(docRef);
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Delete error:', error);

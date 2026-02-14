@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import Gallery from '@/models/Gallery';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, getDoc } from 'firebase/firestore';
 
 export async function GET() {
     try {
-        await connectDB();
-        const gallery = await Gallery.find({}).sort({ createdAt: -1 });
-        const mappedGallery = gallery.map(item => ({
-            ...item.toObject(),
-            id: item._id.toString()
+        const q = query(collection(db, 'gallery'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const gallery = querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
         }));
-        return NextResponse.json(mappedGallery);
+        return NextResponse.json(gallery);
     } catch (error) {
         console.error('Fetch error:', error);
         return NextResponse.json([], { status: 500 });
@@ -19,12 +19,17 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        await connectDB();
         const data = await request.json();
-        const newItem = await Gallery.create(data);
+        const docRef = await addDoc(collection(db, 'gallery'), {
+            ...data,
+            createdAt: new Date().toISOString()
+        });
+
+        const newDocSnap = await getDoc(docRef);
+
         return NextResponse.json({
-            ...newItem.toObject(),
-            id: newItem._id.toString()
+            ...newDocSnap.data(),
+            id: docRef.id
         });
     } catch (error) {
         console.error('Create error:', error);
@@ -34,18 +39,17 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        await connectDB();
         const data = await request.json();
         const { id, ...updateData } = data;
 
-        const updatedItem = await Gallery.findByIdAndUpdate(id, updateData, { new: true });
-        if (!updatedItem) {
-            return NextResponse.json({ error: 'Image not found' }, { status: 404 });
-        }
+        const docRef = doc(db, 'gallery', id);
+        await updateDoc(docRef, updateData);
+
+        const updatedDocSnap = await getDoc(docRef);
 
         return NextResponse.json({
-            ...updatedItem.toObject(),
-            id: updatedItem._id.toString()
+            ...updatedDocSnap.data(),
+            id: id
         });
     } catch (error) {
         console.error('Update error:', error);
@@ -55,12 +59,9 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
     try {
-        await connectDB();
         const { id } = await request.json();
-        const deletedItem = await Gallery.findByIdAndDelete(id);
-        if (!deletedItem) {
-            return NextResponse.json({ error: 'Image not found' }, { status: 404 });
-        }
+        const docRef = doc(db, 'gallery', id);
+        await deleteDoc(docRef);
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Delete error:', error);

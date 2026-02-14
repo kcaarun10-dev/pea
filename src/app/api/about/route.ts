@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import Content from '@/models/Content';
+import { db } from '@/lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export async function GET() {
     try {
-        await connectDB();
-        const content = await Content.findOne({ key: 'about' });
-        return NextResponse.json(content?.data || {});
+        const docRef = doc(db, 'content', 'about');
+        const docSnap = await getDoc(docRef);
+        return NextResponse.json(docSnap.exists() ? docSnap.data() : {});
     } catch (error) {
         console.error('Fetch error:', error);
         return NextResponse.json({ error: 'Failed' }, { status: 500 });
@@ -15,14 +15,10 @@ export async function GET() {
 
 export async function PUT(req: Request) {
     try {
-        await connectDB();
         const newData = await req.json();
-        const content = await Content.findOneAndUpdate(
-            { key: 'about' },
-            { data: newData },
-            { upsert: true, new: true }
-        );
-        return NextResponse.json(content.data);
+        const docRef = doc(db, 'content', 'about');
+        await setDoc(docRef, newData, { merge: true });
+        return NextResponse.json(newData);
     } catch (error) {
         console.error('Update error:', error);
         return NextResponse.json({ error: 'Failed' }, { status: 500 });

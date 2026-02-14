@@ -1,16 +1,16 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import Feedback from '@/models/Feedback';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, getDocs, doc, deleteDoc, query, orderBy, getDoc } from 'firebase/firestore';
 
 export async function GET() {
     try {
-        await connectDB();
-        const feedback = await Feedback.find({}).sort({ createdAt: -1 });
-        const mappedFeedback = feedback.map(item => ({
-            ...item.toObject(),
-            id: item._id.toString()
+        const q = query(collection(db, 'feedback'), orderBy('createdAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const feedback = querySnapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
         }));
-        return NextResponse.json(mappedFeedback);
+        return NextResponse.json(feedback);
     } catch (error) {
         console.error('Fetch error:', error);
         return NextResponse.json([], { status: 500 });
@@ -19,18 +19,20 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        await connectDB();
         const data = await request.json();
 
-        const newEntry = await Feedback.create({
+        const docRef = await addDoc(collection(db, 'feedback'), {
             ...data,
             date: new Date().toISOString(),
-            status: 'New'
+            status: 'New',
+            createdAt: new Date().toISOString()
         });
 
+        const newDocSnap = await getDoc(docRef);
+
         return NextResponse.json({
-            ...newEntry.toObject(),
-            id: newEntry._id.toString()
+            ...newDocSnap.data(),
+            id: docRef.id
         });
     } catch (error) {
         console.error('Create error:', error);
@@ -40,15 +42,12 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
     try {
-        await connectDB();
         const { searchParams } = new URL(request.url);
         const id = searchParams.get('id');
         if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
-        const deletedFeedback = await Feedback.findByIdAndDelete(id);
-        if (!deletedFeedback) {
-            return NextResponse.json({ error: 'Feedback not found' }, { status: 404 });
-        }
+        const docRef = doc(db, 'feedback', id);
+        await deleteDoc(docRef);
 
         return NextResponse.json({ success: true });
     } catch (error) {

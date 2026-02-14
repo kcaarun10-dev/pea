@@ -120,12 +120,12 @@ const AboutPage = () => {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {(achievements || []).map((award: any, i: number) => (
-                            <div key={award.title || i} className="p-10 rounded-[2.5rem] bg-muted border border-gray-100 group hover:bg-primary hover:text-white transition-all duration-500">
+                            <div key={award?.title || i} className="p-10 rounded-[2.5rem] bg-muted border border-gray-100 group hover:bg-primary hover:text-white transition-all duration-500">
                                 <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-accent mb-8 group-hover:scale-110 transition-transform">
                                     <Award size={32} />
                                 </div>
-                                <h4 className="text-2xl font-black mb-4 uppercase tracking-tighter group-hover:text-accent">{award.title}</h4>
-                                <p className="text-muted-foreground group-hover:text-white/60 text-base leading-relaxed font-medium">{award.description}</p>
+                                <h4 className="text-2xl font-black mb-4 uppercase tracking-tighter group-hover:text-accent">{award?.title || 'Achievement'}</h4>
+                                <p className="text-muted-foreground group-hover:text-white/60 text-base leading-relaxed font-medium">{award?.description || 'Excellence in academic and extracurricular activities.'}</p>
                             </div>
                         ))}
                     </div>

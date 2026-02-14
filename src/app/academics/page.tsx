@@ -72,7 +72,7 @@ const AcademicsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     {(levels || []).map((level: any, idx: number) => (
                         <motion.div
-                            key={level.title || idx}
+                            key={level?.title || idx}
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.1 }}
@@ -83,11 +83,11 @@ const AcademicsPage = () => {
                                     <div className="absolute inset-0 bg-primary/20 z-10 group-hover:bg-transparent transition-colors duration-500" />
                                     {/* Placeholder image if not exists */}
                                     <div className="absolute inset-0 bg-muted flex items-center justify-center text-primary/20 italic font-bold text-2xl uppercase tracking-tighter">
-                                        {level.title || 'Academic'} Journey
+                                        {level?.title || 'Academic'} Journey
                                     </div>
                                     <Image
-                                        src={level.image || '/images/hero1.webp'}
-                                        alt={level.title || 'Level'}
+                                        src={level?.image || '/images/hero1.webp'}
+                                        alt={level?.title || 'Level'}
                                         fill
                                         className="object-cover transition-transform duration-1000 group-hover:scale-110"
                                     />
@@ -95,15 +95,15 @@ const AcademicsPage = () => {
                                 <div className="p-10 flex-1 flex flex-col">
                                     <div className="mb-6 flex items-center gap-4">
                                         <div className="p-4 bg-muted rounded-2xl group-hover:bg-primary group-hover:text-white transition-colors duration-300">
-                                            {getLevelIcon(level.title)}
+                                            {getLevelIcon(level?.title || '')}
                                         </div>
-                                        <h2 className="text-3xl font-black text-primary uppercase tracking-tighter">{level.title || 'Academic Level'}</h2>
+                                        <h2 className="text-3xl font-black text-primary uppercase tracking-tighter">{level?.title || 'Academic Level'}</h2>
                                     </div>
                                     <p className="text-muted-foreground font-medium text-lg leading-relaxed mb-8 flex-1">
-                                        {level.description || 'Providing holistic education for our students.'}
+                                        {level?.description || 'Providing holistic education for our students.'}
                                     </p>
                                     <div className="grid grid-cols-2 gap-4">
-                                        {(level.features || []).map((feature: string) => (
+                                        {(level?.features || []).map((feature: string) => (
                                             <div key={feature} className="flex items-center gap-2 text-sm font-bold text-primary/60">
                                                 <ChevronRight size={16} className="text-accent" />
                                                 {feature}
@@ -126,18 +126,18 @@ const AcademicsPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                         {(facilities || []).map((fac: any, idx: number) => (
                             <motion.div
-                                key={fac.title || idx}
+                                key={fac?.title || idx}
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: idx * 0.1 }}
                                 className="p-10 bg-muted/30 rounded-[2.5rem] border border-gray-100 group hover:bg-primary transition-all duration-500"
                             >
                                 <div className="w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-primary mb-8 mx-auto group-hover:rotate-12 group-hover:scale-110 transition-transform">
-                                    {getFacilityIcon(fac.title)}
+                                    {getFacilityIcon(fac?.title || '')}
                                 </div>
-                                <h3 className="text-2xl font-black text-primary mb-4 group-hover:text-white transition-colors tracking-tighter uppercase">{fac.title || 'Facility'}</h3>
+                                <h3 className="text-2xl font-black text-primary mb-4 group-hover:text-white transition-colors tracking-tighter uppercase">{fac?.title || 'Facility'}</h3>
                                 <p className="text-muted-foreground font-medium group-hover:text-white/60 transition-colors">
-                                    {fac.description || 'State of the art learning environment.'}
+                                    {fac?.description || 'State of the art learning environment.'}
                                 </p>
                             </motion.div>
                         ))}

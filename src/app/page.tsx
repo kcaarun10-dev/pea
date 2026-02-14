@@ -58,7 +58,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-screen flex items-center overflow-hidden">
         <Image
-          src={homeData.hero.image}
+          src={homeData?.hero?.image || "/images/hero1.webp"}
           alt="School Hero"
           fill
           className="object-cover scale-105 animate-float opacity-80"
@@ -75,15 +75,15 @@ export default function Home() {
             className="max-w-3xl text-white"
           >
             <span className="inline-flex items-center gap-2 bg-accent text-primary px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-6 shadow-xl shadow-accent/20">
-              <BookOpen size={14} /> {homeData.hero.badge}
+              <BookOpen size={14} /> {homeData?.hero?.badge || 'Education'}
             </span>
             <h1 className="text-6xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter">
-              {homeData.hero?.title1 || 'Excellence in'} <br />
-              <span className="text-accent italic">{homeData.hero?.titleAccent || 'Education'}</span> <br />
-              {homeData.hero?.title2 || 'For All'}
+              {homeData?.hero?.title1 || 'Excellence in'} <br />
+              <span className="text-accent italic">{homeData?.hero?.titleAccent || 'Education'}</span> <br />
+              {homeData?.hero?.title2 || 'For All'}
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-10 max-w-xl font-light leading-relaxed">
-              {homeData.hero.description}
+              {homeData?.hero?.description || 'Providing quality education for a brighter future.'}
             </p>
             <div className="flex flex-wrap gap-6">
               <Link href="/admissions" className="btn-accent text-lg px-10 py-5 group shadow-2xl shadow-accent/20">
@@ -97,13 +97,13 @@ export default function Home() {
         </div>
 
         {/* Floating Stats */}
-        {homeData.stats && Array.isArray(homeData.stats) && homeData.stats.length > 0 && (
+        {homeData?.stats && Array.isArray(homeData.stats) && homeData.stats.length > 0 && (
           <div className="absolute bottom-12 right-12 hidden xl:flex gap-12 bg-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/10 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
             {homeData.stats.map((stat: any, i: number) => (
-              <React.Fragment key={stat.label}>
+              <React.Fragment key={stat?.label || i}>
                 <div className="text-center">
-                  <p className="text-accent text-4xl font-black">{stat.value}</p>
-                  <p className="text-white/60 text-xs font-bold uppercase tracking-widest mt-1">{stat.label}</p>
+                  <p className="text-accent text-4xl font-black">{stat?.value || '0'}</p>
+                  <p className="text-white/60 text-xs font-bold uppercase tracking-widest mt-1">{stat?.label || 'Stat'}</p>
                 </div>
                 {i < homeData.stats.length - 1 && <div className="w-px h-12 bg-white/10" />}
               </React.Fragment>
@@ -128,14 +128,14 @@ export default function Home() {
                   Principal<br />Purandhara Everest Academy
                 </div>
                 <Image
-                  src={homeData.message.image}
+                  src={homeData?.message?.image || "/images/placeholder-user.webp"}
                   alt="Principal"
                   fill
                   className="object-cover"
                 />
               </div>
               <div className="absolute -bottom-10 -right-10 bg-white p-10 rounded-[2.5rem] shadow-2xl border border-gray-100 hidden md:block">
-                <span className="text-accent font-black italic text-4xl leading-none">"{homeData.message.quote}</span>
+                <span className="text-accent font-black italic text-4xl leading-none">"{homeData?.message?.quote || 'Education is the key to success.'}</span>
                 <p className="text-primary font-black uppercase tracking-widest text-[10px] mt-2">{principal?.name || 'Principal'}</p>
               </div>
             </motion.div>
@@ -145,10 +145,10 @@ export default function Home() {
               whileInView={{ opacity: 1, x: 0 }}
               className="lg:w-1/2"
             >
-              <span className="text-accent text-xs font-black uppercase tracking-[0.3em] mb-4 block">{homeData.message.subtitle}</span>
-              <h2 className="text-5xl font-black text-primary mb-8 tracking-tighter uppercase leading-tight">{homeData.message.title.split(' ').slice(0, 3).join(' ')} <br /> <span className="text-accent italic">{homeData.message.title.split(' ').slice(3).join(' ')}</span></h2>
+              <span className="text-accent text-xs font-black uppercase tracking-[0.3em] mb-4 block">{homeData?.message?.subtitle || 'Message from Principal'}</span>
+              <h2 className="text-5xl font-black text-primary mb-8 tracking-tighter uppercase leading-tight">{(homeData?.message?.title || 'Academic Leadership').split(' ').slice(0, 3).join(' ')} <br /> <span className="text-accent italic">{(homeData?.message?.title || 'Academic Leadership').split(' ').slice(3).join(' ')}</span></h2>
               <div className="space-y-6 text-lg text-muted-foreground font-medium leading-relaxed italic">
-                {(homeData.message?.paragraphs || []).map((p: string, i: number) => (
+                {(homeData?.message?.paragraphs || []).map((p: string, i: number) => (
                   <p key={i}>"{p}"</p>
                 ))}
               </div>
@@ -186,8 +186,8 @@ export default function Home() {
                 <div className="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center text-accent mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform">
                   <Award size={32} />
                 </div>
-                <h3 className="text-2xl font-black text-primary mb-4 group-hover:text-white transition-colors tracking-tighter uppercase leading-tight">{feature.title}</h3>
-                <p className="text-muted-foreground font-medium group-hover:text-white/60 transition-colors">{feature.desc}</p>
+                <h3 className="text-2xl font-black text-primary mb-4 group-hover:text-white transition-colors tracking-tighter uppercase leading-tight">{feature?.title || 'Highlight'}</h3>
+                <p className="text-muted-foreground font-medium group-hover:text-white/60 transition-colors">{feature?.desc || 'Exceptional academic and personal growth environment.'}</p>
               </motion.div>
             ))}
           </div>
@@ -258,17 +258,17 @@ export default function Home() {
             <Link href="/gallery" className="btn-accent px-10">Explore All</Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {gallery.map((img, i) => (
+            {(gallery || []).map((img, i) => (
               <motion.div
-                key={i}
+                key={img?.src || i}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.1 }}
                 className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden group border border-white/5"
               >
-                <Image src={img.src} alt={img.title} fill className="object-cover group-hover:scale-110 transition-all duration-700" />
+                <Image src={img?.src || "/images/placeholder.webp"} alt={img?.title || "Gallery Image"} fill className="object-cover group-hover:scale-110 transition-all duration-700" />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8">
-                  <p className="text-white font-black text-lg translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{img.title}</p>
+                  <p className="text-white font-black text-lg translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{img?.title || "Untitled"}</p>
                 </div>
               </motion.div>
             ))}

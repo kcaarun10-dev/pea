@@ -1,33 +1,61 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ISetting extends Document {
-    schoolName: string;
-    shortName: string;
-    logo: string;
-    address: string;
-    phone: string;
+    schoolName1: string;
+    schoolName2: string;
     email: string;
+    phone: string;
+    location: string;
+    officeHours: string;
+    whatsapp: string;
+    logo: string;
+    description: string;
+    established: string;
+    footerSlogan: string;
     socials: {
         facebook: string;
+        twitter: string;
         instagram: string;
-        whatsapp: string;
         youtube: string;
     };
+    mapUrl: string;
+    leadership: Array<{
+        id: string;
+        name: string;
+        role: string;
+        fb: string;
+        bio: string;
+        image: string;
+    }>;
 }
 
 const SettingSchema = new Schema<ISetting>({
-    schoolName: { type: String, required: true },
-    shortName: { type: String, required: true },
-    logo: { type: String, required: true },
-    address: { type: String, required: true },
-    phone: { type: String, required: true },
-    email: { type: String, required: true },
+    schoolName1: String,
+    schoolName2: String,
+    email: String,
+    phone: String,
+    location: String,
+    officeHours: String,
+    whatsapp: String,
+    logo: String,
+    description: String,
+    established: String,
+    footerSlogan: String,
     socials: {
         facebook: String,
+        twitter: String,
         instagram: String,
-        whatsapp: String,
         youtube: String,
     },
+    mapUrl: String,
+    leadership: [{
+        id: String,
+        name: String,
+        role: String,
+        fb: String,
+        bio: String,
+        image: String,
+    }]
 }, { timestamps: true });
 
 export default mongoose.models.Setting || mongoose.model<ISetting>('Setting', SettingSchema);
