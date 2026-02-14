@@ -46,9 +46,9 @@ const NoticesPage = () => {
             <section className="py-20 -mt-16 relative z-20">
                 <div className="max-w-5xl mx-auto px-4">
                     <div className="space-y-4">
-                        {notices.map((notice, idx) => (
+                        {(notices || []).map((notice, idx) => (
                             <motion.div
-                                key={notice.id}
+                                key={notice.id || idx}
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.1 }}
@@ -56,8 +56,8 @@ const NoticesPage = () => {
                             >
                                 <div className="flex flex-col md:flex-row gap-6 p-6">
                                     <div className="md:w-32 h-32 bg-muted rounded-2xl flex flex-col items-center justify-center text-primary shrink-0 group-hover:bg-primary group-hover:text-white transition-colors duration-500">
-                                        <span className="text-3xl font-black">{notice.date.split(' ')[1]}</span>
-                                        <span className="text-xs font-black uppercase tracking-widest">{notice.date.split(' ')[0]}</span>
+                                        <span className="text-3xl font-black">{notice.date?.split(' ')[1] || '??'}</span>
+                                        <span className="text-xs font-black uppercase tracking-widest">{notice.date?.split(' ')[0] || 'Date'}</span>
                                     </div>
                                     <div className="flex-1 space-y-3">
                                         <div className="flex items-center gap-3">

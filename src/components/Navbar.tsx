@@ -35,21 +35,23 @@ const Navbar = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex flex-col">
                     {/* Top Bar (Hidden on scroll) */}
-                    {!scrolled && settings && (
+                    {!scrolled && settings && Object.keys(settings).length > 0 && (
                         <div className="flex justify-between items-center py-2 border-b border-white/10 text-xs mb-3 hidden md:flex animate-in fade-in slide-in-from-top-4 duration-700">
                             <div className="flex gap-6 opacity-80">
-                                <a href={`tel:${settings.phone}`} className="flex items-center gap-1 hover:text-accent transition-colors">
-                                    <Phone size={12} /> {settings.phone}
+                                <a href={`tel:${settings.phone || '#'}`} className="flex items-center gap-1 hover:text-accent transition-colors">
+                                    <Phone size={12} /> {settings.phone || '9857823607'}
                                 </a>
-                                <a href={`mailto:${settings.email}`} className="flex items-center gap-1 hover:text-accent transition-colors">
-                                    <Mail size={12} /> {settings.email}
+                                <a href={`mailto:${settings.email || '#'}`} className="flex items-center gap-1 hover:text-accent transition-colors">
+                                    <Mail size={12} /> {settings.email || 'pea.babai3@gmail.com'}
                                 </a>
                             </div>
                             <div className="flex items-center gap-6 opacity-80">
-                                <span className="flex items-center gap-1"><Clock size={12} /> Opening: {settings.officeHours}</span>
-                                <a href={settings.socials.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-all hover:scale-110">
-                                    <Facebook size={14} />
-                                </a>
+                                <span className="flex items-center gap-1"><Clock size={12} /> Opening: {settings.officeHours || '9:00 AM - 4:00 PM'}</span>
+                                {settings.socials?.facebook && (
+                                    <a href={settings.socials.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-all hover:scale-110">
+                                        <Facebook size={14} />
+                                    </a>
+                                )}
                             </div>
                         </div>
                     )}

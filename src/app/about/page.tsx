@@ -28,7 +28,10 @@ const AboutPage = () => {
         </div>
     );
 
-    const { heritage, mission, vision, achievements } = aboutData;
+    const heritage = aboutData?.heritage || { title: 'Our Story', description: '', introTitle: 'PEA Legacy', introText: '', points: [] };
+    const mission = aboutData?.mission || 'To provide quality education.';
+    const vision = aboutData?.vision || 'To lead in excellence.';
+    const achievements = aboutData?.achievements || [];
 
     return (
         <div className="pt-24 min-h-screen">
@@ -38,8 +41,8 @@ const AboutPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-primary/50 to-primary" />
                 <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                        <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter leading-none">Our <br /><span className="text-accent italic">{heritage.title.replace('Our ', '')}</span></h1>
-                        <p className="text-xl text-white/60 max-w-2xl mx-auto font-light">{heritage.description}</p>
+                        <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter leading-none">Our <br /><span className="text-accent italic">{heritage.title?.replace('Our ', '') || 'Story'}</span></h1>
+                        <p className="text-xl text-white/60 max-w-2xl mx-auto font-light">{heritage.description || 'Shaping the future through excellence in education.'}</p>
                     </motion.div>
                 </div>
             </section>
@@ -49,12 +52,14 @@ const AboutPage = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div className="space-y-8">
-                            <h2 className="text-5xl font-black text-primary leading-tight">{heritage.introTitle.split(' ').slice(0, 2).join(' ')} <span className="text-accent">{heritage.introTitle.split(' ')[2]}</span> <br /> {heritage.introTitle.split(' ').slice(3).join(' ')}</h2>
+                            <h2 className="text-5xl font-black text-primary leading-tight">
+                                {(heritage.introTitle || 'PEA Excellence').split(' ').slice(0, 2).join(' ')} <span className="text-accent">{(heritage.introTitle || 'PEA Excellence').split(' ')[2] || ''}</span> <br /> {(heritage.introTitle || 'PEA Excellence').split(' ').slice(3).join(' ')}
+                            </h2>
                             <p className="text-muted-foreground text-lg leading-relaxed font-medium">
-                                {heritage.introText}
+                                {heritage.introText || 'We are dedicated to providing the best learning environment.'}
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {heritage.points.map((point: string) => (
+                                {(heritage.points || []).map((point: string) => (
                                     <div key={point} className="flex items-center gap-4 p-4 rounded-2xl bg-muted/50 border border-gray-100 group hover:border-accent transition-all">
                                         <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all">
                                             <CheckCircle size={20} />
@@ -114,8 +119,8 @@ const AboutPage = () => {
                         <h2 className="text-5xl md:text-6xl text-primary mb-4 tracking-tighter">Our Achievements</h2>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {achievements.map((award: any, i: number) => (
-                            <div key={award.title} className="p-10 rounded-[2.5rem] bg-muted border border-gray-100 group hover:bg-primary hover:text-white transition-all duration-500">
+                        {(achievements || []).map((award: any, i: number) => (
+                            <div key={award.title || i} className="p-10 rounded-[2.5rem] bg-muted border border-gray-100 group hover:bg-primary hover:text-white transition-all duration-500">
                                 <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-accent mb-8 group-hover:scale-110 transition-transform">
                                     <Award size={32} />
                                 </div>

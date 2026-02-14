@@ -20,7 +20,7 @@ const GalleryPage = () => {
             });
     }, []);
 
-    const categories = ['All', ...Array.from(new Set(images.map(img => img.category)))];
+    const categories = ['All', ...Array.from(new Set((images || []).map(img => img.category))).filter(Boolean)];
 
     const filteredImages = activeCategory === 'All'
         ? images
@@ -78,28 +78,28 @@ const GalleryPage = () => {
                     layout
                     className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8 space-y-8"
                 >
-                    {filteredImages.map((img, i) => (
+                    {(filteredImages || []).map((img, i) => (
                         <motion.div
-                            key={img.src}
+                            key={img?.src || i} // Fallback key
                             layout
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.5 }}
                             className="relative group rounded-[2.5rem] overflow-hidden break-inside-avoid shadow-xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all cursor-pointer border-8 border-white"
-                            onClick={() => setSelectedImage(img.src)}
+                            onClick={() => setSelectedImage(img?.src || null)} // Null-safe click handler
                         >
                             <Image
-                                src={img.src}
-                                alt={img.title}
+                                src={img?.src || '/images/placeholder.jpg'} // Fallback image source
+                                alt={img?.title || 'Gallery Image'} // Fallback alt text
                                 width={500}
                                 height={500}
                                 className="w-full h-auto object-cover transition-transform duration-1000 group-hover:scale-110"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 p-8 flex flex-col justify-end">
                                 <span className="bg-accent text-primary text-[10px] font-black uppercase px-3 py-1 rounded-full w-fit mb-3">
-                                    {img.category}
+                                    {img?.category || 'Uncategorized'} {/* Fallback category */}
                                 </span>
-                                <h4 className="text-white font-black text-xl uppercase tracking-tighter leading-tight">{img.title}</h4>
+                                <h4 className="text-white font-black text-xl uppercase tracking-tighter leading-tight">{img?.title || 'Untitled'}</h4> {/* Fallback title */}
                                 <div className="mt-6 w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                                     <Maximize2 size={24} />
                                 </div>

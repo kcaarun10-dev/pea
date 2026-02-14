@@ -78,9 +78,9 @@ export default function Home() {
               <BookOpen size={14} /> {homeData.hero.badge}
             </span>
             <h1 className="text-6xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter">
-              {homeData.hero.title1} <br />
-              <span className="text-accent italic">{homeData.hero.titleAccent}</span> <br />
-              {homeData.hero.title2}
+              {homeData.hero?.title1 || 'Excellence in'} <br />
+              <span className="text-accent italic">{homeData.hero?.titleAccent || 'Education'}</span> <br />
+              {homeData.hero?.title2 || 'For All'}
             </h1>
             <p className="text-xl md:text-2xl text-white/80 mb-10 max-w-xl font-light leading-relaxed">
               {homeData.hero.description}
@@ -97,17 +97,19 @@ export default function Home() {
         </div>
 
         {/* Floating Stats */}
-        <div className="absolute bottom-12 right-12 hidden xl:flex gap-12 bg-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/10 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-          {homeData.stats.map((stat: any, i: number) => (
-            <React.Fragment key={stat.label}>
-              <div className="text-center">
-                <p className="text-accent text-4xl font-black">{stat.value}</p>
-                <p className="text-white/60 text-xs font-bold uppercase tracking-widest mt-1">{stat.label}</p>
-              </div>
-              {i < homeData.stats.length - 1 && <div className="w-px h-12 bg-white/10" />}
-            </React.Fragment>
-          ))}
-        </div>
+        {homeData.stats && Array.isArray(homeData.stats) && homeData.stats.length > 0 && (
+          <div className="absolute bottom-12 right-12 hidden xl:flex gap-12 bg-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/10 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+            {homeData.stats.map((stat: any, i: number) => (
+              <React.Fragment key={stat.label}>
+                <div className="text-center">
+                  <p className="text-accent text-4xl font-black">{stat.value}</p>
+                  <p className="text-white/60 text-xs font-bold uppercase tracking-widest mt-1">{stat.label}</p>
+                </div>
+                {i < homeData.stats.length - 1 && <div className="w-px h-12 bg-white/10" />}
+              </React.Fragment>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Principal's Message Section */}
@@ -146,7 +148,7 @@ export default function Home() {
               <span className="text-accent text-xs font-black uppercase tracking-[0.3em] mb-4 block">{homeData.message.subtitle}</span>
               <h2 className="text-5xl font-black text-primary mb-8 tracking-tighter uppercase leading-tight">{homeData.message.title.split(' ').slice(0, 3).join(' ')} <br /> <span className="text-accent italic">{homeData.message.title.split(' ').slice(3).join(' ')}</span></h2>
               <div className="space-y-6 text-lg text-muted-foreground font-medium leading-relaxed italic">
-                {homeData.message.paragraphs.map((p: string, i: number) => (
+                {(homeData.message?.paragraphs || []).map((p: string, i: number) => (
                   <p key={i}>"{p}"</p>
                 ))}
               </div>
@@ -173,7 +175,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {homeData.features.map((feature: any, i: number) => (
+            {(homeData.features || []).map((feature: any, i: number) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
