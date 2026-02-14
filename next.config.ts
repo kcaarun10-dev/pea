@@ -13,15 +13,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push({
-        'cloudinary': 'commonjs cloudinary'
-      });
+  serverExternalPackages: ['cloudinary'],
+  experimental: {
+    turbo: {
+      resolveAlias: {
+        'cloudinary': 'cloudinary'
+      }
     }
-    return config;
-  },
+  }
 };
 
 export default nextConfig;
