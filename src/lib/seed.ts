@@ -1,4 +1,4 @@
-import { db } from '../src/lib/firebase';
+import { db } from './firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
 const seedData = async () => {
