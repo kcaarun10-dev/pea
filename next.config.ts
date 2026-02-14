@@ -14,13 +14,6 @@ const nextConfig: NextConfig = {
     ],
   },
   serverExternalPackages: ['cloudinary'],
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        'cloudinary': 'cloudinary'
-      }
-    }
-  }
 };
 
 export default nextConfig;
