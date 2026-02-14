@@ -1209,7 +1209,7 @@ const AdminDashboard = () => {
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Main Title</label>
                                                         <input
                                                             type="text"
-                                                            value={homeData.message.title}
+                                                            value={homeData.message?.title || ''}
                                                             onChange={(e) => setHomeData({ ...homeData, message: { ...homeData.message, title: e.target.value } })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm"
                                                         />
@@ -1218,7 +1218,7 @@ const AdminDashboard = () => {
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Quote Banner</label>
                                                         <input
                                                             type="text"
-                                                            value={homeData.message.quote}
+                                                            value={homeData.message?.quote || ''}
                                                             onChange={(e) => setHomeData({ ...homeData, message: { ...homeData.message, quote: e.target.value } })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm italic"
                                                             placeholder="Excellent Education"
@@ -1226,7 +1226,7 @@ const AdminDashboard = () => {
                                                     </div>
                                                     <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Message Paragraphs</label>
-                                                        {homeData.message.paragraphs.map((p: string, i: number) => (
+                                                        {homeData.message?.paragraphs?.map((p: string, i: number) => (
                                                             <textarea
                                                                 key={i}
                                                                 value={p}
@@ -1398,7 +1398,7 @@ const AdminDashboard = () => {
                                                         <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Main Title</label>
                                                         <input
                                                             type="text"
-                                                            value={aboutData.heritage.title}
+                                                            value={aboutData.heritage?.title || ''}
                                                             onChange={(e) => setAboutData({ ...aboutData, heritage: { ...aboutData.heritage, title: e.target.value } })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-white/5 border-none outline-none font-bold text-white"
                                                         />
@@ -1406,7 +1406,7 @@ const AdminDashboard = () => {
                                                     <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-white/40 uppercase tracking-widest">Hero Description</label>
                                                         <textarea
-                                                            value={aboutData.heritage.description}
+                                                            value={aboutData.heritage?.description || ''}
                                                             onChange={(e) => setAboutData({ ...aboutData, heritage: { ...aboutData.heritage, description: e.target.value } })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-white/5 border-none outline-none font-bold text-white text-sm h-32 resize-none"
                                                         />
@@ -1419,7 +1419,7 @@ const AdminDashboard = () => {
                                                     <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Our Mission</label>
                                                         <textarea
-                                                            value={aboutData.mission}
+                                                            value={aboutData.mission || ''}
                                                             onChange={(e) => setAboutData({ ...aboutData, mission: e.target.value })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm h-32 resize-none"
                                                         />
@@ -1427,7 +1427,7 @@ const AdminDashboard = () => {
                                                     <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Our Vision</label>
                                                         <textarea
-                                                            value={aboutData.vision}
+                                                            value={aboutData.vision || ''}
                                                             onChange={(e) => setAboutData({ ...aboutData, vision: e.target.value })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm h-32 resize-none"
                                                         />
@@ -1452,7 +1452,7 @@ const AdminDashboard = () => {
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Active Batch</label>
                                                         <input
                                                             type="text"
-                                                            value={admissionsPageData.batch}
+                                                            value={admissionsPageData.batch || ''}
                                                             onChange={(e) => setAdmissionsPageData({ ...admissionsPageData, batch: e.target.value })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm"
                                                         />
@@ -1461,7 +1461,7 @@ const AdminDashboard = () => {
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Form Title</label>
                                                         <input
                                                             type="text"
-                                                            value={admissionsPageData.title}
+                                                            value={admissionsPageData.title || ''}
                                                             onChange={(e) => setAdmissionsPageData({ ...admissionsPageData, title: e.target.value })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-sm"
                                                         />
@@ -1471,7 +1471,7 @@ const AdminDashboard = () => {
                                                     <div className="space-y-1">
                                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Subtitle / Intro</label>
                                                         <textarea
-                                                            value={admissionsPageData.subtitle}
+                                                            value={admissionsPageData.subtitle || ''}
                                                             onChange={(e) => setAdmissionsPageData({ ...admissionsPageData, subtitle: e.target.value })}
                                                             className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-xs h-32 resize-none"
                                                         />
@@ -1481,7 +1481,7 @@ const AdminDashboard = () => {
                                             <div className="space-y-1">
                                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Submission Success Message</label>
                                                 <textarea
-                                                    value={admissionsPageData.successMessage}
+                                                    value={admissionsPageData.successMessage || ''}
                                                     onChange={(e) => setAdmissionsPageData({ ...admissionsPageData, successMessage: e.target.value })}
                                                     className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-xs h-24 resize-none"
                                                 />
