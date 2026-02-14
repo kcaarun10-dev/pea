@@ -28,6 +28,12 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 const AdminDashboard = () => {
+    // Authentication state
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [loginError, setLoginError] = useState('');
+
     const [activeTab, setActiveTab] = useState('Dashboard');
     const [notices, setNotices] = useState<any[]>([]);
     const [admissions, setAdmissions] = useState<any[]>([]);
@@ -57,6 +63,34 @@ const AdminDashboard = () => {
     const [isUploading, setIsUploading] = useState(false);
 
     const [currentTime, setCurrentTime] = useState(new Date());
+
+    // Check for existing session on mount
+    useEffect(() => {
+        const session = localStorage.getItem('adminAuth');
+        if (session === 'authenticated') {
+            setIsAuthenticated(true);
+        }
+    }, []);
+
+    // Handle login
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (username === 'arun' && password === 'arun') {
+            setIsAuthenticated(true);
+            localStorage.setItem('adminAuth', 'authenticated');
+            setLoginError('');
+        } else {
+            setLoginError('Invalid username or password');
+        }
+    };
+
+    // Handle logout
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+        localStorage.removeItem('adminAuth');
+        setUsername('');
+        setPassword('');
+    };
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -476,15 +510,89 @@ const AdminDashboard = () => {
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-white text-primary font-bold">Initializing PEA Admin CMS...</div>;
 
-    return (
-        <div className="h-screen bg-zinc-50 flex overflow-hidden">
-            {/* Sidebar */}
-            <aside className="w-72 bg-primary text-white flex flex-col pt-10 shrink-0 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+    // Show login page if not authenticated
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-primary via-primary/95 to-accent flex items-center justify-center p-4">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-white rounded-[3rem] shadow-2xl p-12 w-full max-w-md"
+                >
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center gap-3 mb-6">
+                            <div className="bg-primary p-3 rounded-2xl">
+                                <span className="text-white font-black text-2xl">PEA</span>
+                            </div>
+                        </div>
+                        <h1 className="text-3xl font-black text-primary uppercase tracking-tighter mb-2">Admin Login</h1>
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Control Hub Access</p>
+                    </div>
 
-                <div className="px-8 mb-12 flex items-center gap-4 relative z-10">
-                    <div className="bg-white p-2 rounded-2xl w-12 h-12 flex items-center justify-center shadow-xl shadow-white/10">
-                        <span className="text-primary font-black text-xl tracking-tighter">PEA</span>
+                    <form onSubmit={handleLogin} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Username</label>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary"
+                                placeholder="Enter username"
+                                required
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-black text-gray-400 uppercase tracking-widest">Password</label>
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary"
+                                placeholder="Enter password"
+                                required
+                            />
+                        </div>
+
+                        {loginError && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-bold text-center"
+                            >
+                                {loginError}
+                            </motion.div>
+                        )}
+
+                        <button
+                            type="submit"
+                            className="w-full bg-primary text-white py-4 font-black uppercase tracking-widest rounded-2xl text-xs hover:shadow-2xl hover:shadow-primary/20 transition-all active:scale-95"
+                        >
+                            Login to Dashboard
+                        </button>
+                    </form>
+
+                    <div className="mt-8 text-center">
+                        <Link href="/" className="text-xs font-bold text-gray-400 hover:text-primary transition-colors uppercase tracking-widest">
+                            ← Back to Website
+                        </Link>
+                    </div>
+                </motion.div>
+            </div>
+        );
+    }
+
+    // Show dashboard if authenticated
+    return (
+        <div className="flex min-h-screen bg-muted/30">
+            {/* Sidebar */}
+            <aside className="w-80 bg-gradient-to-b from-primary via-primary/95 to-primary/90 text-white flex flex-col relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+                <div className="p-8 flex items-center gap-4 relative z-10">
+                    <div className="bg-white p-3 rounded-2xl">
+                        <span className="text-primary font-black text-2xl">PEA</span>
                     </div>
                     <div>
                         <h2 className="font-black tracking-tighter text-lg leading-tight uppercase">Control Hub</h2>
@@ -524,10 +632,14 @@ const AdminDashboard = () => {
                     ))}
                 </nav>
 
-                <div className="p-8 mt-auto border-t border-white/5 relative z-10">
-                    <Link href="/" className="flex items-center gap-4 text-white/40 hover:text-white transition-colors group px-4 py-2">
+                <div className="p-8 mt-auto border-t border-white/5 relative z-10 space-y-2">
+                    <button onClick={handleLogout} className="flex items-center gap-4 text-white/40 hover:text-white transition-colors group px-4 py-2 w-full">
                         <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-inherit">Exit to Website</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-inherit">Logout</span>
+                    </button>
+                    <Link href="/" className="flex items-center gap-4 text-white/40 hover:text-white transition-colors group px-4 py-2">
+                        <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-inherit">View Website</span>
                     </Link>
                 </div>
             </aside>
