@@ -1,73 +1,75 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const dataPath = path.join(process.cwd(), 'src/data/notices.json');
+import connectDB from '@/lib/mongodb';
+import Notice from '@/models/Notice';
 
 export async function GET() {
     try {
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        return NextResponse.json(JSON.parse(fileData));
+        await connectDB();
+        const notices = await Notice.find({}).sort({ createdAt: -1 });
+        const mappedNotices = notices.map(notice => ({
+            ...notice.toObject(),
+            id: notice._id.toString()
+        }));
+        return NextResponse.json(mappedNotices);
     } catch (error) {
+        console.error('Fetch error:', error);
         return NextResponse.json([], { status: 500 });
     }
 }
 
 export async function POST(request: Request) {
     try {
-        const newNotice = await request.json();
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        const notices = JSON.parse(fileData);
+        await connectDB();
+        const data = await request.json();
 
-        const noticeWithId = {
-            ...newNotice,
-            id: Date.now().toString(),
-            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-        };
+        const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const newNotice = await Notice.create({
+            ...data,
+            date: data.date || date
+        });
 
-        notices.unshift(noticeWithId);
-        fs.writeFileSync(dataPath, JSON.stringify(notices, null, 2));
-
-        return NextResponse.json(noticeWithId);
+        return NextResponse.json({
+            ...newNotice.toObject(),
+            id: newNotice._id.toString()
+        });
     } catch (error) {
+        console.error('Create error:', error);
         return NextResponse.json({ error: 'Failed to save notice' }, { status: 500 });
     }
 }
 
 export async function PUT(request: Request) {
     try {
-        const updatedNotice = await request.json();
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        let notices = JSON.parse(fileData);
+        await connectDB();
+        const data = await request.json();
+        const { id, ...updateData } = data;
 
-        const index = notices.findIndex((n: any) => n.id === updatedNotice.id);
-        if (index === -1) {
+        const updatedNotice = await Notice.findByIdAndUpdate(id, updateData, { new: true });
+        if (!updatedNotice) {
             return NextResponse.json({ error: 'Notice not found' }, { status: 404 });
         }
 
-        notices[index] = { ...notices[index], ...updatedNotice };
-        fs.writeFileSync(dataPath, JSON.stringify(notices, null, 2));
-
-        return NextResponse.json(notices[index]);
+        return NextResponse.json({
+            ...updatedNotice.toObject(),
+            id: updatedNotice._id.toString()
+        });
     } catch (error) {
+        console.error('Update error:', error);
         return NextResponse.json({ error: 'Failed to update notice' }, { status: 500 });
     }
 }
 
 export async function DELETE(request: Request) {
     try {
+        await connectDB();
         const { id } = await request.json();
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        let notices = JSON.parse(fileData);
-
-        const updatedNotices = notices.filter((n: any) => n.id !== id);
-        if (notices.length === updatedNotices.length) {
+        const deletedNotice = await Notice.findByIdAndDelete(id);
+        if (!deletedNotice) {
             return NextResponse.json({ error: 'Notice not found' }, { status: 404 });
         }
-
-        fs.writeFileSync(dataPath, JSON.stringify(updatedNotices, null, 2));
         return NextResponse.json({ success: true });
     } catch (error) {
+        console.error('Delete error:', error);
         return NextResponse.json({ error: 'Failed to delete notice' }, { status: 500 });
     }
 }

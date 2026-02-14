@@ -1,24 +1,30 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const dataPath = path.join(process.cwd(), 'src/data/academics.json');
+import connectDB from '@/lib/mongodb';
+import Content from '@/models/Content';
 
 export async function GET() {
     try {
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        return NextResponse.json(JSON.parse(fileData));
+        await connectDB();
+        const content = await Content.findOne({ key: 'academics' });
+        return NextResponse.json(content?.data || { levels: [], facilities: [] });
     } catch (error) {
+        console.error('Fetch error:', error);
         return NextResponse.json({ levels: [], facilities: [] }, { status: 500 });
     }
 }
 
 export async function PUT(request: Request) {
     try {
-        const updatedData = await request.json();
-        fs.writeFileSync(dataPath, JSON.stringify(updatedData, null, 2));
-        return NextResponse.json(updatedData);
+        await connectDB();
+        const newData = await request.json();
+        const content = await Content.findOneAndUpdate(
+            { key: 'academics' },
+            { data: newData },
+            { upsert: true, new: true }
+        );
+        return NextResponse.json(content.data);
     } catch (error) {
+        console.error('Update error:', error);
         return NextResponse.json({ error: 'Failed to update academics data' }, { status: 500 });
     }
 }

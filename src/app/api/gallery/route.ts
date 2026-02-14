@@ -1,70 +1,69 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const dataPath = path.join(process.cwd(), 'src/data/gallery.json');
+import connectDB from '@/lib/mongodb';
+import Gallery from '@/models/Gallery';
 
 export async function GET() {
     try {
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        return NextResponse.json(JSON.parse(fileData));
+        await connectDB();
+        const gallery = await Gallery.find({}).sort({ createdAt: -1 });
+        const mappedGallery = gallery.map(item => ({
+            ...item.toObject(),
+            id: item._id.toString()
+        }));
+        return NextResponse.json(mappedGallery);
     } catch (error) {
+        console.error('Fetch error:', error);
         return NextResponse.json([], { status: 500 });
     }
 }
 
 export async function POST(request: Request) {
     try {
-        const newImage = await request.json();
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        const gallery = JSON.parse(fileData);
-
-        const imageWithId = {
-            ...newImage,
-            id: Date.now().toString()
-        };
-        gallery.unshift(imageWithId);
-        fs.writeFileSync(dataPath, JSON.stringify(gallery, null, 2));
-
-        return NextResponse.json(imageWithId);
+        await connectDB();
+        const data = await request.json();
+        const newItem = await Gallery.create(data);
+        return NextResponse.json({
+            ...newItem.toObject(),
+            id: newItem._id.toString()
+        });
     } catch (error) {
+        console.error('Create error:', error);
         return NextResponse.json({ error: 'Failed to add image' }, { status: 500 });
     }
 }
+
 export async function PUT(request: Request) {
     try {
-        const updatedImage = await request.json();
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        let gallery = JSON.parse(fileData);
+        await connectDB();
+        const data = await request.json();
+        const { id, ...updateData } = data;
 
-        const index = gallery.findIndex((img: any) => img.id === updatedImage.id);
-        if (index === -1) {
+        const updatedItem = await Gallery.findByIdAndUpdate(id, updateData, { new: true });
+        if (!updatedItem) {
             return NextResponse.json({ error: 'Image not found' }, { status: 404 });
         }
 
-        gallery[index] = { ...gallery[index], ...updatedImage };
-        fs.writeFileSync(dataPath, JSON.stringify(gallery, null, 2));
-
-        return NextResponse.json(gallery[index]);
+        return NextResponse.json({
+            ...updatedItem.toObject(),
+            id: updatedItem._id.toString()
+        });
     } catch (error) {
+        console.error('Update error:', error);
         return NextResponse.json({ error: 'Failed to update image' }, { status: 500 });
     }
 }
 
 export async function DELETE(request: Request) {
     try {
+        await connectDB();
         const { id } = await request.json();
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        let gallery = JSON.parse(fileData);
-
-        const updatedGallery = gallery.filter((img: any) => img.id !== id);
-        if (gallery.length === updatedGallery.length) {
+        const deletedItem = await Gallery.findByIdAndDelete(id);
+        if (!deletedItem) {
             return NextResponse.json({ error: 'Image not found' }, { status: 404 });
         }
-
-        fs.writeFileSync(dataPath, JSON.stringify(updatedGallery, null, 2));
         return NextResponse.json({ success: true });
     } catch (error) {
+        console.error('Delete error:', error);
         return NextResponse.json({ error: 'Failed to delete image' }, { status: 500 });
     }
 }

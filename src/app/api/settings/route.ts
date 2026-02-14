@@ -1,24 +1,30 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const dataPath = path.join(process.cwd(), 'src/data/settings.json');
+import connectDB from '@/lib/mongodb';
+import Setting from '@/models/Setting';
 
 export async function GET() {
     try {
-        const fileData = fs.readFileSync(dataPath, 'utf8');
-        return NextResponse.json(JSON.parse(fileData));
+        await connectDB();
+        const settings = await Setting.findOne({});
+        return NextResponse.json(settings || {});
     } catch (error) {
+        console.error('Fetch error:', error);
         return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
     }
 }
 
 export async function PUT(request: Request) {
     try {
+        await connectDB();
         const updatedSettings = await request.json();
-        fs.writeFileSync(dataPath, JSON.stringify(updatedSettings, null, 2));
-        return NextResponse.json(updatedSettings);
+        const settings = await Setting.findOneAndUpdate({}, updatedSettings, {
+            upsert: true,
+            new: true,
+            setDefaultsOnInsert: true
+        });
+        return NextResponse.json(settings);
     } catch (error) {
+        console.error('Update error:', error);
         return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 });
     }
 }

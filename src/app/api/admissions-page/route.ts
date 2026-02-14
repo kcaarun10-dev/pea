@@ -1,16 +1,30 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const dataFile = path.join(process.cwd(), 'src/data/admissions_page.json');
+import connectDB from '@/lib/mongodb';
+import Content from '@/models/Content';
 
 export async function GET() {
-    const data = fs.readFileSync(dataFile, 'utf8');
-    return NextResponse.json(JSON.parse(data));
+    try {
+        await connectDB();
+        const content = await Content.findOne({ key: 'admissions-page' });
+        return NextResponse.json(content?.data || {});
+    } catch (error) {
+        console.error('Fetch error:', error);
+        return NextResponse.json({ error: 'Failed' }, { status: 500 });
+    }
 }
 
 export async function PUT(req: Request) {
-    const newData = await req.json();
-    fs.writeFileSync(dataFile, JSON.stringify(newData, null, 2));
-    return NextResponse.json(newData);
+    try {
+        await connectDB();
+        const newData = await req.json();
+        const content = await Content.findOneAndUpdate(
+            { key: 'admissions-page' },
+            { data: newData },
+            { upsert: true, new: true }
+        );
+        return NextResponse.json(content.data);
+    } catch (error) {
+        console.error('Update error:', error);
+        return NextResponse.json({ error: 'Failed' }, { status: 500 });
+    }
 }
