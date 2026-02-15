@@ -2707,10 +2707,10 @@ const AdminDashboard = () => {
                                         
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Paste Facebook Image URLs</label>
-                                            <p className="text-[10px] text-gray-400 font-medium">Paste Facebook image links (one per line) or a Facebook album/post URL</p>
+                                            <p className="text-[10px] text-gray-400 font-medium">Paste Facebook image links, post URLs, or embed code</p>
                                             <textarea
-                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all h-32 font-bold text-primary placeholder:text-gray-300 resize-none text-sm"
-                                                placeholder="https://scontent.fktm8-1.fna.fbcdn.net/v/t1.6435-9/...&#10;https://scontent.fktm8-1.fna.fbcdn.net/v/t1.6435-9/...&#10;Or paste album URL: https://facebook.com/pea.babai3/posts/..."
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all h-40 font-bold text-primary placeholder:text-gray-300 resize-none text-sm"
+                                                placeholder="Paste Facebook embed code or URLs:&#10;&#10;<iframe src=\"https://www.facebook.com/plugins/post.php?href=...&#10;&#10;Or direct image URLs:&#10;https://scontent.fktm8-1.fna.fbcdn.net/...&#10;&#10;Or post links:&#10;https://facebook.com/pea.babai3/posts/..."
                                                 value={facebookUrls}
                                                 onChange={(e) => setFacebookUrls(e.target.value)}
                                             />
@@ -2719,32 +2719,57 @@ const AdminDashboard = () => {
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                // Parse Facebook URLs from the textarea
-                                                const urls = facebookUrls.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+                                                const input = facebookUrls;
                                                 const imageUrls: {name: string, url: string}[] = [];
                                                 
-                                                for (const url of urls) {
-                                                    // Check if it's a direct image URL (scontent.fbcdn.net)
-                                                    if (url.includes('fbcdn.net') || url.includes('facebook.com') || url.includes('fb.com')) {
+                                                // Extract URLs from iframe embed code
+                                                const iframeMatch = input.match(/href=([^&\"\s]+)/g);
+                                                if (iframeMatch) {
+                                                    iframeMatch.forEach(match => {
+                                                        const decoded = decodeURIComponent(match.replace('href=', ''));
+                                                        if (decoded.includes('facebook.com') || decoded.includes('fb.com')) {
+                                                            // Extract story_fbid for naming
+                                                            const storyMatch = decoded.match(/story_fbid=([^&]+)/);
+                                                            const idMatch = decoded.match(/id=([^&]+)/);
+                                                            const name = storyMatch ? `FB Post ${storyMatch[1].slice(0, 8)}` : `FB Photo ${imageUrls.length + 1}`;
+                                                            imageUrls.push({
+                                                                name: name,
+                                                                url: decoded
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                                
+                                                // Parse regular URLs from the textarea (lines that are URLs)
+                                                const lines = input.split('\n').map(line => line.trim()).filter(line => line.length > 0 && !line.startsWith('<'));
+                                                for (const url of lines) {
+                                                    if (url.includes('fbcdn.net')) {
+                                                        // Direct image URL
                                                         imageUrls.push({
                                                             name: `Facebook Photo ${imageUrls.length + 1}`,
+                                                            url: url
+                                                        });
+                                                    } else if (url.includes('facebook.com') || url.includes('fb.com')) {
+                                                        // Facebook post/album URL
+                                                        imageUrls.push({
+                                                            name: `FB Post ${imageUrls.length + 1}`,
                                                             url: url
                                                         });
                                                     }
                                                 }
                                                 
                                                 if (imageUrls.length === 0) {
-                                                    alert('No valid Facebook image URLs found. Please paste direct image URLs from Facebook.');
+                                                    alert('No valid Facebook URLs found. Please paste Facebook embed code, direct image URLs, or post links.');
                                                     return;
                                                 }
                                                 
                                                 setParsedFacebookImages(imageUrls);
-                                                alert(`Found ${imageUrls.length} Facebook image URLs ready to import!`);
+                                                alert(`Found ${imageUrls.length} items ready to import!`);
                                             }}
                                             disabled={!facebookUrls.trim()}
                                             className="w-full bg-primary text-white py-4 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
                                         >
-                                            Parse Facebook URLs
+                                            Extract from Facebook
                                         </button>
 
                                         {/* Preview of parsed Facebook images */}
