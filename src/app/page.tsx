@@ -98,17 +98,31 @@ export default function Home() {
 
         {/* Floating Stats - Mobile Responsive */}
         {homeData?.stats && Array.isArray(homeData.stats) && homeData.stats.length > 0 && (
-          <div className="absolute bottom-4 md:bottom-12 left-4 right-4 md:left-auto md:right-12 flex flex-wrap justify-center md:justify-start gap-4 md:gap-12 bg-white/5 backdrop-blur-xl p-4 md:p-10 rounded-2xl md:rounded-3xl border border-white/10 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
-            {homeData.stats.map((stat: any, i: number) => (
-              <React.Fragment key={stat?.label || i}>
-                <div className="text-center">
-                  <p className="text-accent text-2xl md:text-4xl font-black">{stat?.value || '0'}</p>
-                  <p className="text-white/60 text-[10px] md:text-xs font-bold uppercase tracking-widest mt-1">{stat?.label || 'Stat'}</p>
-                </div>
-                {i < homeData.stats.length - 1 && <div className="hidden md:block w-px h-12 bg-white/10" />}
-              </React.Fragment>
-            ))}
-          </div>
+          <>
+            {/* Mobile: Stats below content */}
+            <div className="md:hidden relative z-10 max-w-7xl mx-auto px-4 pb-8">
+              <div className="flex flex-wrap justify-center gap-6 bg-white/10 backdrop-blur-xl p-4 rounded-2xl border border-white/20">
+                {homeData.stats.map((stat: any, i: number) => (
+                  <div key={stat?.label || i} className="text-center">
+                    <p className="text-accent text-2xl font-black">{stat?.value || '0'}</p>
+                    <p className="text-white/80 text-[10px] font-bold uppercase tracking-widest">{stat?.label || 'Stat'}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Desktop: Stats floating at bottom right */}
+            <div className="hidden md:flex absolute bottom-12 right-12 gap-12 bg-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/10 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-500">
+              {homeData.stats.map((stat: any, i: number) => (
+                <React.Fragment key={stat?.label || i}>
+                  <div className="text-center">
+                    <p className="text-accent text-4xl font-black">{stat?.value || '0'}</p>
+                    <p className="text-white/60 text-xs font-bold uppercase tracking-widest mt-1">{stat?.label || 'Stat'}</p>
+                  </div>
+                  {i < homeData.stats.length - 1 && <div className="w-px h-12 bg-white/10" />}
+                </React.Fragment>
+              ))}
+            </div>
+          </>
         )}
       </section>
 
