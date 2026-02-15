@@ -27,7 +27,7 @@ export const Marquee: React.FC<MarqueeProps> = ({
       <div
         className="flex whitespace-nowrap animate-marquee"
         style={{
-          animation: `marquee ${speed}s linear infinite`,
+          animationDuration: `${speed}s`,
         }}
       >
         {duplicatedItems.map((item, index) => (
@@ -40,22 +40,6 @@ export const Marquee: React.FC<MarqueeProps> = ({
           </span>
         ))}
       </div>
-      <style jsx>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-marquee {
-          animation: marquee ${speed}s linear infinite;
-        }
-        .animate-marquee:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
     </div>
   );
 };
