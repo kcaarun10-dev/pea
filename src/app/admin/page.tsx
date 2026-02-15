@@ -2667,41 +2667,45 @@ const AdminDashboard = () => {
                                                     return;
                                                 }
                                                 setIsSaving(true);
-                                                let successCount = 0;
                                                 
-                                                for (const img of bulkGalleryImages) {
-                                                    try {
-                                                        const res = await fetch('/api/gallery', {
-                                                            method: 'POST',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify({
-                                                                title: img.name,
-                                                                src: img.url,
-                                                                category: bulkGalleryCategory
-                                                            })
-                                                        });
-                                                        if (res.ok) successCount++;
-                                                    } catch (error) {
-                                                        console.error('Failed to add:', img.name);
+                                                try {
+                                                    // Create album with all images
+                                                    const albumTitle = bulkGalleryTitle.trim() || 'Untitled Album';
+                                                    const images = bulkGalleryImages.map((img, index) => ({
+                                                        src: img.url,
+                                                        title: img.name || `Photo ${index + 1}`
+                                                    }));
+                                                    
+                                                    const res = await fetch('/api/albums', {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify({
+                                                            title: albumTitle,
+                                                            category: bulkGalleryCategory,
+                                                            images: images,
+                                                            coverImage: images[0]?.src || bulkGalleryImages[0].url
+                                                        })
+                                                    });
+                                                    
+                                                    if (res.ok) {
+                                                        alert(`Album "${albumTitle}" created with ${images.length} photos!`);
+                                                        setBulkGalleryImages([]);
+                                                        setBulkGalleryTitle('');
+                                                        setShowGalleryModal(false);
+                                                    } else {
+                                                        alert('Failed to create album');
                                                     }
+                                                } catch (error) {
+                                                    console.error('Failed to create album:', error);
+                                                    alert('Failed to create album');
+                                                } finally {
+                                                    setIsSaving(false);
                                                 }
-                                                
-                                                // Refresh gallery
-                                                const res = await fetch('/api/gallery');
-                                                if (res.ok) {
-                                                    const data = await res.json();
-                                                    setGallery(Array.isArray(data) ? data : []);
-                                                }
-                                                
-                                                setBulkGalleryImages([]);
-                                                setShowGalleryModal(false);
-                                                setIsSaving(false);
-                                                alert(`${successCount} photos added to gallery!`);
                                             }}
                                             disabled={isSaving || isUploading || bulkGalleryImages.length === 0}
                                             className="w-full bg-accent text-primary py-5 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] shadow-2xl shadow-accent/20 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
                                         >
-                                            {isSaving ? `Adding ${bulkGalleryImages.length} Photos...` : isUploading ? 'Uploading...' : `Add ${bulkGalleryImages.length} Photos to Gallery`}
+                                            {isSaving ? 'Creating Album...' : isUploading ? 'Uploading...' : `Create Album with ${bulkGalleryImages.length} Photos`}
                                         </button>
                                     </div>
                                 )}
@@ -2914,47 +2918,51 @@ const AdminDashboard = () => {
                                                     return;
                                                 }
                                                 setIsSaving(true);
-                                                let successCount = 0;
                                                 
-                                                for (let i = 0; i < parsedFacebookImages.length; i++) {
-                                                    const img = parsedFacebookImages[i];
-                                                    try {
-                                                        const baseTitle = bulkGalleryTitle.trim();
-                                                        const title = baseTitle 
-                                                            ? `${baseTitle} ${i + 1}`
-                                                            : img.name;
-                                                        const res = await fetch('/api/gallery', {
-                                                            method: 'POST',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify({
-                                                                title: title,
-                                                                src: img.url,
-                                                                category: bulkGalleryCategory
-                                                            })
-                                                        });
-                                                        if (res.ok) successCount++;
-                                                    } catch (error) {
-                                                        console.error('Failed to add:', img.name);
+                                                try {
+                                                    // Create album with all Facebook images
+                                                    const albumTitle = bulkGalleryTitle.trim() || 'Facebook Album';
+                                                    const baseTitle = bulkGalleryTitle.trim();
+                                                    
+                                                    const images = parsedFacebookImages.map((img, index) => ({
+                                                        src: img.url,
+                                                        title: baseTitle 
+                                                            ? `${baseTitle} ${index + 1}`
+                                                            : img.name
+                                                    }));
+                                                    
+                                                    const res = await fetch('/api/albums', {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify({
+                                                            title: albumTitle,
+                                                            category: bulkGalleryCategory,
+                                                            images: images,
+                                                            coverImage: images[0]?.src || parsedFacebookImages[0].url
+                                                        })
+                                                    });
+                                                    
+                                                    if (res.ok) {
+                                                        alert(`Album "${albumTitle}" created with ${images.length} photos!`);
+                                                        setParsedFacebookImages([]);
+                                                        setFacebookUrls('');
+                                                        setFacebookShareUrl('');
+                                                        setBulkGalleryTitle('');
+                                                        setShowGalleryModal(false);
+                                                    } else {
+                                                        alert('Failed to create album');
                                                     }
+                                                } catch (error) {
+                                                    console.error('Failed to create album:', error);
+                                                    alert('Failed to create album');
+                                                } finally {
+                                                    setIsSaving(false);
                                                 }
-                                                
-                                                // Refresh gallery
-                                                const res = await fetch('/api/gallery');
-                                                if (res.ok) {
-                                                    const data = await res.json();
-                                                    setGallery(Array.isArray(data) ? data : []);
-                                                }
-                                                
-                                                setParsedFacebookImages([]);
-                                                setFacebookUrls('');
-                                                setShowGalleryModal(false);
-                                                setIsSaving(false);
-                                                alert(`${successCount} Facebook photos added to gallery!`);
                                             }}
                                             disabled={isSaving || parsedFacebookImages.length === 0}
                                             className="w-full bg-accent text-primary py-5 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] shadow-2xl shadow-accent/20 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
                                         >
-                                            {isSaving ? `Adding ${parsedFacebookImages.length} Photos...` : `Add ${parsedFacebookImages.length} Facebook Photos to Gallery`}
+                                            {isSaving ? 'Creating Album...' : `Create Album with ${parsedFacebookImages.length} Photos`}
                                         </button>
                                     </div>
                                 )}

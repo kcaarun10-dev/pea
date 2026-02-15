@@ -2,39 +2,48 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Maximize2, X, Filter } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Filter, ImageIcon, Calendar, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+
+interface Album {
+    id: string;
+    title: string;
+    category: string;
+    images: { src: string; title: string }[];
+    coverImage: string;
+    createdAt: string;
+}
 
 const GalleryPage = () => {
-    const [images, setImages] = useState<any[]>([]);
+    const [albums, setAlbums] = useState<Album[]>([]);
     const [activeCategory, setActiveCategory] = useState('All');
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch('/api/gallery')
+        fetch('/api/albums')
             .then(res => res.json())
             .then(data => {
-                setImages(Array.isArray(data) ? data : []);
+                setAlbums(Array.isArray(data) ? data : []);
                 setLoading(false);
             })
             .catch(() => {
-                setImages([]);
+                setAlbums([]);
                 setLoading(false);
             });
     }, []);
 
-    const safeImages = Array.isArray(images) ? images : [];
-    const categories = ['All', ...Array.from(new Set(safeImages.map(img => img?.category))).filter(Boolean)];
+    const safeAlbums = Array.isArray(albums) ? albums : [];
+    const categories = ['All', ...Array.from(new Set(safeAlbums.map(album => album?.category))).filter(Boolean)];
 
-    const filteredImages = activeCategory === 'All'
-        ? safeImages
-        : safeImages.filter(img => img?.category === activeCategory);
+    const filteredAlbums = activeCategory === 'All'
+        ? safeAlbums
+        : safeAlbums.filter(album => album?.category === activeCategory);
 
     if (loading) return (
         <div className="pt-40 pb-20 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="font-black text-primary uppercase tracking-tighter">Developing Memories...</p>
+            <p className="font-black text-primary uppercase tracking-tighter">Loading Albums...</p>
         </div>
     );
 
@@ -48,9 +57,9 @@ const GalleryPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="relative z-10"
                 >
-                    <span className="text-accent text-xs font-black uppercase tracking-[0.3em] mb-4 block">Visual Journey</span>
-                    <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter uppercase leading-none">The Academy <br /><span className="text-accent italic text-4xl md:text-6xl">Gallery</span></h1>
-                    <p className="text-white/60 max-w-xl mx-auto font-light text-xl">Capturing moments of growth, joy, and excellence at PEA.</p>
+                    <span className="text-accent text-xs font-black uppercase tracking-[0.3em] mb-4 block">Photo Collections</span>
+                    <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter uppercase leading-none">The Academy <br /><span className="text-accent italic text-4xl md:text-6xl">Albums</span></h1>
+                    <p className="text-white/60 max-w-xl mx-auto font-light text-xl">Browse our photo collections from school events and activities.</p>
                 </motion.div>
             </section>
 
@@ -62,7 +71,7 @@ const GalleryPage = () => {
                     className="bg-white p-4 md:p-8 rounded-[3rem] shadow-2xl flex flex-wrap items-center justify-center gap-4 mb-20 border border-gray-100"
                 >
                     <div className="flex items-center gap-2 mr-6 text-primary font-black uppercase tracking-widest text-[10px]">
-                        <Filter size={16} /> Filter Gallery:
+                        <Filter size={16} /> Filter Albums:
                     </div>
                     {categories.map((cat) => (
                         <button
@@ -78,74 +87,66 @@ const GalleryPage = () => {
                     ))}
                 </motion.div>
 
-                {/* Grid */}
-                <motion.div
-                    layout
-                    className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8 space-y-8"
-                >
-                    {(filteredImages || []).map((img, i) => (
+                {/* Albums Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    {(filteredAlbums || []).map((album, i) => (
                         <motion.div
-                            key={img?.src || i} // Fallback key
-                            layout
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.5 }}
-                            className="relative group rounded-[2.5rem] overflow-hidden break-inside-avoid shadow-xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all cursor-pointer border-8 border-white"
-                            onClick={() => setSelectedImage(img?.src || null)} // Null-safe click handler
+                            key={album?.id || i}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.1 }}
                         >
-                            <Image
-                                src={img?.src || '/images/placeholder.jpg'} // Fallback image source
-                                alt={img?.title || 'Gallery Image'} // Fallback alt text
-                                width={500}
-                                height={500}
-                                className="w-full h-auto object-cover transition-transform duration-1000 group-hover:scale-110"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 p-8 flex flex-col justify-end">
-                                <span className="bg-accent text-primary text-[10px] font-black uppercase px-3 py-1 rounded-full w-fit mb-3">
-                                    {img?.category || 'Uncategorized'} {/* Fallback category */}
-                                </span>
-                                <h4 className="text-white font-black text-xl uppercase tracking-tighter leading-tight">{img?.title || 'Untitled'}</h4> {/* Fallback title */}
-                                <div className="mt-6 w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
-                                    <Maximize2 size={24} />
+                            <Link href={`/gallery/album/${album.id}`}>
+                                <div className="group bg-white rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] transition-all duration-500 cursor-pointer border-4 border-white">
+                                    {/* Cover Image */}
+                                    <div className="relative aspect-[4/3] overflow-hidden">
+                                        <Image
+                                            src={album?.coverImage || '/images/placeholder.jpg'}
+                                            alt={album?.title || 'Album'}
+                                            fill
+                                            className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-primary/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        
+                                        {/* Photo Count Badge */}
+                                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                                            <ImageIcon size={14} className="text-primary" />
+                                            <span className="text-xs font-black text-primary">{album?.images?.length || 0}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Album Info */}
+                                    <div className="p-6">
+                                        <span className="inline-block bg-accent/20 text-primary text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3">
+                                            {album?.category || 'Uncategorized'}
+                                        </span>
+                                        <h3 className="text-lg font-black text-primary uppercase tracking-tight leading-tight mb-2 line-clamp-2">
+                                            {album?.title || 'Untitled Album'}
+                                        </h3>
+                                        <div className="flex items-center justify-between text-gray-400">
+                                            <div className="flex items-center gap-1 text-xs font-bold">
+                                                <Calendar size={12} />
+                                                {album?.createdAt ? new Date(album.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown date'}
+                                            </div>
+                                            <div className="flex items-center gap-1 text-xs font-black text-accent group-hover:translate-x-1 transition-transform">
+                                                View <ChevronRight size={14} />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </Link>
                         </motion.div>
                     ))}
-                </motion.div>
+                </div>
 
-                {filteredImages.length === 0 && (
+                {filteredAlbums.length === 0 && (
                     <div className="text-center py-32 bg-white rounded-[4rem] border-4 border-dashed border-muted">
-                        <p className="text-muted-foreground font-black uppercase tracking-widest">Category Empty</p>
+                        <ImageIcon size={48} className="text-gray-300 mx-auto mb-4" />
+                        <p className="text-muted-foreground font-black uppercase tracking-widest">No Albums Found</p>
+                        <p className="text-gray-400 text-sm mt-2">Albums will appear here when added from the admin panel.</p>
                     </div>
                 )}
             </section>
-
-            {/* Lightbox */}
-            <AnimatePresence>
-                {selectedImage && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-primary/95 backdrop-blur-3xl z-[100] flex items-center justify-center p-4 md:p-12"
-                    >
-                        <button
-                            className="absolute top-10 right-10 text-white hover:text-accent transition-all p-4 bg-white/5 rounded-2xl border border-white/10"
-                            onClick={() => setSelectedImage(null)}
-                        >
-                            <X size={32} />
-                        </button>
-                        <motion.div
-                            initial={{ scale: 0.9, y: 20 }}
-                            animate={{ scale: 1, y: 0 }}
-                            exit={{ scale: 0.9, y: 20 }}
-                            className="relative w-full h-full rounded-[3.5rem] overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)] border-[12px] border-white/5"
-                        >
-                            <Image src={selectedImage} alt="Preview" fill className="object-contain" />
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 };
