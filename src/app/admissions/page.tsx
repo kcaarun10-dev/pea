@@ -55,16 +55,16 @@ const AdmissionPage = () => {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="bg-white p-12 rounded-[3.5rem] shadow-2xl text-center max-w-xl border border-gray-100"
+                    className="bg-white p-8 md:p-12 rounded-[2rem] md:rounded-[3.5rem] shadow-2xl text-center max-w-xl border border-gray-100"
                 >
-                    <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
-                        <CheckCircle size={48} />
+                    <div className="w-20 h-20 md:w-24 md:h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 md:mb-8 animate-bounce">
+                        <CheckCircle size={36} />
                     </div>
-                    <h1 className="text-4xl font-black text-primary mb-4 uppercase tracking-tighter">Application Received!</h1>
-                    <p className="text-muted-foreground text-lg leading-relaxed mb-8 font-medium">
+                    <h1 className="text-2xl md:text-4xl font-black text-primary mb-4 uppercase tracking-tighter">Application Received!</h1>
+                    <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6 md:mb-8 font-medium">
                         {pageData?.successMessage || "Thank you for choosing Purandhara Everest Academy. Our administration team will review your application and contact you within 24-48 hours."}
                     </p>
-                    <button onClick={() => window.location.href = '/'} className="btn-primary w-full py-5 text-lg shadow-xl shadow-primary/20">
+                    <button onClick={() => window.location.href = '/'} className="btn-primary w-full py-4 md:py-5 text-base md:text-lg shadow-xl shadow-primary/20">
                         Back to Homepage
                     </button>
                 </motion.div>
@@ -80,16 +80,16 @@ const AdmissionPage = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-white rounded-[3.5rem] shadow-2xl overflow-hidden border border-gray-100"
                 >
-                    <div className="bg-primary text-white p-16 text-center relative overflow-hidden">
+                    <div className="bg-primary text-white p-8 md:p-16 text-center relative overflow-hidden">
                         <div className="absolute inset-0 opacity-10 bg-[url('/images/pattern.png')]" />
                         <div className="relative z-10">
                             <span className="inline-block bg-accent text-primary px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">Batch {pageData?.batch || "2026"}</span>
-                            <h1 className="text-5xl font-black mb-4 tracking-tighter uppercase leading-none">{pageData?.title || "Admission Form"}</h1>
-                            <p className="text-white/60 text-lg font-light">{pageData?.subtitle || "Join the community of excellence at Purandhara Everest"}</p>
+                            <h1 className="text-3xl md:text-5xl font-black mb-4 tracking-tighter uppercase leading-none">{pageData?.title || "Admission Form"}</h1>
+                            <p className="text-white/60 text-base md:text-lg font-light">{pageData?.subtitle || "Join the community of excellence at Purandhara Everest"}</p>
                         </div>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="p-12 md:p-16 space-y-12">
+                    <form onSubmit={handleSubmit} className="p-6 md:p-12 lg:p-16 space-y-8 md:space-y-12">
                         {/* Student Info */}
                         <div className="space-y-8">
                             <h3 className="text-2xl font-black flex items-center gap-3 text-primary uppercase tracking-tighter">
@@ -204,7 +204,7 @@ const AdmissionPage = () => {
                             </div>
                         </div>
 
-                        <div className="bg-muted/50 p-10 rounded-[2.5rem] border border-gray-100 text-center space-y-8">
+                        <div className="bg-muted/50 p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-gray-100 text-center space-y-6 md:space-y-8">
                             <p className="text-sm font-medium text-muted-foreground italic">
                                 * Information collected is strictly for admission processes. We'll contact you shortly.
                             </p>

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   keywords: ["Best school in Dang", "School in Babai", "Secondary school Dang", "Purandhara Everest Academy", "Quality Education Nepal"],
   authors: [{ name: "PEA Admin" }],
   creator: "Purandhara Everest Academy",
+  viewport: "width=device-width, initial-scale=1",
   openGraph: {
     type: "website",
     locale: "en_NP",

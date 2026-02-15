@@ -39,29 +39,29 @@ const AboutPage = () => {
     return (
         <div className="pt-24 min-h-screen">
             {/* Header */}
-            <section className="bg-primary text-white py-32 relative overflow-hidden">
+            <section className="bg-primary text-white py-16 md:py-32 relative overflow-hidden">
                 <Image src="/images/hero2.webp" alt="Background" fill className="object-cover opacity-20 scale-105 animate-float" />
                 <div className="absolute inset-0 bg-gradient-to-b from-primary/50 to-primary" />
                 <div className="relative z-10 max-w-7xl mx-auto px-4 text-center">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                        <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter leading-none">Our <br /><span className="text-accent italic">{heritage.title?.replace('Our ', '') || 'Story'}</span></h1>
-                        <p className="text-xl text-white/60 max-w-2xl mx-auto font-light">{heritage.description || 'Shaping the future through excellence in education.'}</p>
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black mb-4 md:mb-6 tracking-tighter leading-none">Our <br /><span className="text-accent italic">{heritage.title?.replace('Our ', '') || 'Story'}</span></h1>
+                        <p className="text-base md:text-xl text-white/60 max-w-2xl mx-auto font-light">{heritage.description || 'Shaping the future through excellence in education.'}</p>
                     </motion.div>
                 </div>
             </section>
 
             {/* Intro */}
-            <section className="py-32 bg-white">
+            <section className="py-16 md:py-32 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                        <div className="space-y-8">
-                            <h2 className="text-5xl font-black text-primary leading-tight">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-20 items-center">
+                        <div className="space-y-6 md:space-y-8">
+                            <h2 className="text-3xl md:text-5xl font-black text-primary leading-tight">
                                 {(heritage.introTitle || 'PEA Excellence').split(' ').slice(0, 2).join(' ')} <span className="text-accent">{(heritage.introTitle || 'PEA Excellence').split(' ')[2] || ''}</span> <br /> {(heritage.introTitle || 'PEA Excellence').split(' ').slice(3).join(' ')}
                             </h2>
-                            <p className="text-muted-foreground text-lg leading-relaxed font-medium">
+                            <p className="text-muted-foreground text-base md:text-lg leading-relaxed font-medium">
                                 {heritage.introText || 'We are dedicated to providing the best learning environment.'}
                             </p>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                                 {(heritage.points || []).map((point: string) => (
                                     <div key={point} className="flex items-center gap-4 p-4 rounded-2xl bg-muted/50 border border-gray-100 group hover:border-accent transition-all">
                                         <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent group-hover:bg-accent group-hover:text-white transition-all">
@@ -73,8 +73,8 @@ const AboutPage = () => {
                             </div>
                         </div>
                         <div className="relative group">
-                            <div className="absolute -inset-4 bg-accent/20 rounded-[3rem] blur-2xl group-hover:bg-accent/30 transition-all" />
-                            <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl aspect-video border-8 border-white">
+                            <div className="absolute -inset-4 bg-accent/20 rounded-[2rem] md:rounded-[3rem] blur-2xl group-hover:bg-accent/30 transition-all" />
+                            <div className="relative rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl aspect-video border-4 md:border-8 border-white">
                                 <Image src="/images/intro.webp" alt="About PEA" fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
                             </div>
                         </div>
@@ -83,30 +83,30 @@ const AboutPage = () => {
             </section>
 
             {/* Mission & Vision */}
-            <section className="py-32 bg-muted/30 relative">
+            <section className="py-16 md:py-32 bg-muted/30 relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
                         <motion.div
                             whileHover={{ y: -10 }}
-                            className="bg-white p-12 rounded-[3rem] shadow-sm border border-gray-100 flex flex-col items-center text-center group"
+                            className="bg-white p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] shadow-sm border border-gray-100 flex flex-col items-center text-center group"
                         >
-                            <div className="w-20 h-20 bg-accent/10 text-accent rounded-3xl flex items-center justify-center mb-8 rotate-3 group-hover:rotate-0 group-hover:bg-accent group-hover:text-white transition-all duration-500">
-                                <span className="text-3xl font-black italic">M</span>
+                            <div className="w-16 h-16 md:w-20 md:h-20 bg-accent/10 text-accent rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-8 rotate-3 group-hover:rotate-0 group-hover:bg-accent group-hover:text-white transition-all duration-500">
+                                <span className="text-2xl md:text-3xl font-black italic">M</span>
                             </div>
-                            <h3 className="text-3xl font-black mb-6 text-primary uppercase tracking-tighter transition-colors group-hover:text-accent">Our Mission</h3>
-                            <p className="text-muted-foreground leading-relaxed text-lg font-medium">
+                            <h3 className="text-2xl md:text-3xl font-black mb-4 md:mb-6 text-primary uppercase tracking-tighter transition-colors group-hover:text-accent">Our Mission</h3>
+                            <p className="text-muted-foreground leading-relaxed text-base md:text-lg font-medium">
                                 {mission}
                             </p>
                         </motion.div>
                         <motion.div
                             whileHover={{ y: -10 }}
-                            className="bg-primary p-12 rounded-[3rem] shadow-xl border border-white/5 flex flex-col items-center text-center group"
+                            className="bg-primary p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] shadow-xl border border-white/5 flex flex-col items-center text-center group"
                         >
-                            <div className="w-20 h-20 bg-white/10 text-white rounded-3xl flex items-center justify-center mb-8 -rotate-3 group-hover:rotate-0 group-hover:bg-accent group-hover:text-primary transition-all duration-500">
-                                <span className="text-3xl font-black italic">V</span>
+                            <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 text-white rounded-2xl md:rounded-3xl flex items-center justify-center mb-6 md:mb-8 -rotate-3 group-hover:rotate-0 group-hover:bg-accent group-hover:text-primary transition-all duration-500">
+                                <span className="text-2xl md:text-3xl font-black italic">V</span>
                             </div>
-                            <h3 className="text-3xl font-black mb-6 text-white uppercase tracking-tighter transition-colors group-hover:text-accent">Our Vision</h3>
-                            <p className="text-white/60 leading-relaxed text-lg font-light">
+                            <h3 className="text-2xl md:text-3xl font-black mb-4 md:mb-6 text-white uppercase tracking-tighter transition-colors group-hover:text-accent">Our Vision</h3>
+                            <p className="text-white/60 leading-relaxed text-base md:text-lg font-light">
                                 {vision}
                             </p>
                         </motion.div>
@@ -115,20 +115,20 @@ const AboutPage = () => {
             </section>
 
             {/* Achievements */}
-            <section className="py-32 bg-white">
+            <section className="py-16 md:py-32 bg-white">
                 <div className="max-w-7xl mx-auto px-4 font-black">
-                    <div className="text-center mb-20">
+                    <div className="text-center mb-12 md:mb-20">
                         <span className="text-accent text-xs uppercase tracking-[0.3em] mb-4 block">Milestones</span>
-                        <h2 className="text-5xl md:text-6xl text-primary mb-4 tracking-tighter">Our Achievements</h2>
+                        <h2 className="text-3xl md:text-5xl lg:text-6xl text-primary mb-4 tracking-tighter">Our Achievements</h2>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                         {(achievements || []).map((award: any, i: number) => (
-                            <div key={award?.title || i} className="p-10 rounded-[2.5rem] bg-muted border border-gray-100 group hover:bg-primary hover:text-white transition-all duration-500">
-                                <div className="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-accent mb-8 group-hover:scale-110 transition-transform">
-                                    <Award size={32} />
+                            <div key={award?.title || i} className="p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] bg-muted border border-gray-100 group hover:bg-primary hover:text-white transition-all duration-500">
+                                <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white shadow-sm flex items-center justify-center text-accent mb-6 md:mb-8 group-hover:scale-110 transition-transform">
+                                    <Award size={28} />
                                 </div>
-                                <h4 className="text-2xl font-black mb-4 uppercase tracking-tighter group-hover:text-accent">{award?.title || 'Achievement'}</h4>
-                                <p className="text-muted-foreground group-hover:text-white/60 text-base leading-relaxed font-medium">{award?.description || 'Excellence in academic and extracurricular activities.'}</p>
+                                <h4 className="text-xl md:text-2xl font-black mb-3 md:mb-4 uppercase tracking-tighter group-hover:text-accent">{award?.title || 'Achievement'}</h4>
+                                <p className="text-muted-foreground group-hover:text-white/60 text-sm md:text-base leading-relaxed font-medium">{award?.description || 'Excellence in academic and extracurricular activities.'}</p>
                             </div>
                         ))}
                     </div>

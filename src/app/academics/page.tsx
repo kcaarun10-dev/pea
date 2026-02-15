@@ -55,24 +55,24 @@ const AcademicsPage = () => {
     return (
         <div className="pt-24 min-h-screen pb-24 bg-muted/30">
             {/* Header */}
-            <section className="bg-primary text-white py-32 text-center relative overflow-hidden">
+            <section className="bg-primary text-white py-16 md:py-32 text-center relative overflow-hidden">
                 <div className="absolute inset-0 opacity-10 bg-[url('/images/pattern.png')]" />
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="relative z-10"
+                    className="relative z-10 px-4"
                 >
                     <span className="text-accent text-xs font-black uppercase tracking-[0.3em] mb-4 block">Our Excellence</span>
-                    <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter uppercase leading-none">Holistic <br /><span className="text-accent italic text-4xl md:text-6xl">Academics</span></h1>
-                    <p className="text-white/60 max-w-2xl mx-auto font-light text-xl leading-relaxed px-4">
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black mb-4 md:mb-6 tracking-tighter uppercase leading-none">Holistic <br /><span className="text-accent italic text-2xl sm:text-3xl md:text-4xl lg:text-6xl">Academics</span></h1>
+                    <p className="text-white/60 max-w-2xl mx-auto font-light text-base md:text-xl leading-relaxed px-4">
                         We believe in education that goes beyond textbooks, nurturing character, curiosity, and the capability to lead.
                     </p>
                 </motion.div>
             </section>
 
             {/* Academic Levels */}
-            <section className="max-w-7xl mx-auto px-4 -mt-16 relative z-20">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <section className="max-w-7xl mx-auto px-4 -mt-8 md:-mt-16 relative z-20">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
                     {(levels || []).map((level: any, idx: number) => (
                         <motion.div
                             key={level?.title || idx}
@@ -95,14 +95,14 @@ const AcademicsPage = () => {
                                         className="object-cover transition-transform duration-1000 group-hover:scale-110"
                                     />
                                 </div>
-                                <div className="p-10 flex-1 flex flex-col">
-                                    <div className="mb-6 flex items-center gap-4">
-                                        <div className="p-4 bg-muted rounded-2xl group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                                <div className="p-6 md:p-10 flex-1 flex flex-col">
+                                    <div className="mb-4 md:mb-6 flex items-center gap-4">
+                                        <div className="p-3 md:p-4 bg-muted rounded-2xl group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                                             {getLevelIcon(level?.title || '')}
                                         </div>
-                                        <h2 className="text-3xl font-black text-primary uppercase tracking-tighter">{level?.title || 'Academic Level'}</h2>
+                                        <h2 className="text-2xl md:text-3xl font-black text-primary uppercase tracking-tighter">{level?.title || 'Academic Level'}</h2>
                                     </div>
-                                    <p className="text-muted-foreground font-medium text-lg leading-relaxed mb-8 flex-1">
+                                    <p className="text-muted-foreground font-medium text-base md:text-lg leading-relaxed mb-6 md:mb-8 flex-1">
                                         {level?.description || 'Providing holistic education for our students.'}
                                     </p>
                                     <div className="grid grid-cols-2 gap-4">
@@ -121,25 +121,25 @@ const AcademicsPage = () => {
             </section>
 
             {/* Facilities Highlight */}
-            <section className="py-32 bg-white mt-24">
+            <section className="py-16 md:py-32 bg-white mt-12 md:mt-24">
                 <div className="max-w-7xl mx-auto px-4 text-center">
                     <span className="text-accent text-xs font-black uppercase tracking-[0.3em] mb-4 block">Modern Infrastructure</span>
-                    <h2 className="text-5xl font-black text-primary mb-16 tracking-tighter uppercase">World Class Facilities</h2>
+                    <h2 className="text-3xl md:text-5xl font-black text-primary mb-10 md:mb-16 tracking-tighter uppercase">World Class Facilities</h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-12">
                         {(facilities || []).map((fac: any, idx: number) => (
                             <motion.div
                                 key={fac?.title || idx}
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 whileInView={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: idx * 0.1 }}
-                                className="p-10 bg-muted/30 rounded-[2.5rem] border border-gray-100 group hover:bg-primary transition-all duration-500"
+                                className="p-6 md:p-10 bg-muted/30 rounded-[1.5rem] md:rounded-[2.5rem] border border-gray-100 group hover:bg-primary transition-all duration-500"
                             >
-                                <div className="w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-primary mb-8 mx-auto group-hover:rotate-12 group-hover:scale-110 transition-transform">
+                                <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center text-primary mb-6 md:mb-8 mx-auto group-hover:rotate-12 group-hover:scale-110 transition-transform">
                                     {getFacilityIcon(fac?.title || '')}
                                 </div>
-                                <h3 className="text-2xl font-black text-primary mb-4 group-hover:text-white transition-colors tracking-tighter uppercase">{fac?.title || 'Facility'}</h3>
-                                <p className="text-muted-foreground font-medium group-hover:text-white/60 transition-colors">
+                                <h3 className="text-xl md:text-2xl font-black text-primary mb-3 md:mb-4 group-hover:text-white transition-colors tracking-tighter uppercase">{fac?.title || 'Facility'}</h3>
+                                <p className="text-muted-foreground text-sm md:text-base font-medium group-hover:text-white/60 transition-colors">
                                     {fac?.description || 'State of the art learning environment.'}
                                 </p>
                             </motion.div>
@@ -149,15 +149,15 @@ const AcademicsPage = () => {
             </section>
 
             {/* Call to Action */}
-            <section className="max-w-7xl mx-auto px-4 py-24">
-                <div className="bg-primary rounded-[4rem] p-16 text-center text-white relative overflow-hidden">
+            <section className="max-w-7xl mx-auto px-4 py-16 md:py-24">
+                <div className="bg-primary rounded-[2rem] md:rounded-[4rem] p-8 md:p-16 text-center text-white relative overflow-hidden">
                     <div className="absolute inset-0 opacity-10 bg-[url('/images/pattern.png')]" />
                     <div className="relative z-10 max-w-2xl mx-auto">
-                        <Award size={64} className="mx-auto text-accent mb-8 animate-float" />
-                        <h2 className="text-4xl md:text-5xl font-black mb-8 tracking-tighter uppercase leading-tight">Ready to join the elite academic journey?</h2>
-                        <div className="flex flex-wrap justify-center gap-6">
-                            <button onClick={() => window.location.href = '/admissions'} className="btn-accent px-12 py-5 text-xl font-black">Apply Now</button>
-                            <button onClick={() => window.location.href = '/contact'} className="bg-white/10 border border-white/20 px-12 py-5 rounded-2xl font-black text-xl hover:bg-white/20 transition-all">Visit PEA</button>
+                        <Award size={48} className="mx-auto text-accent mb-6 md:mb-8 animate-float" />
+                        <h2 className="text-2xl md:text-4xl lg:text-5xl font-black mb-6 md:mb-8 tracking-tighter uppercase leading-tight">Ready to join the elite academic journey?</h2>
+                        <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-4 md:gap-6">
+                            <button onClick={() => window.location.href = '/admissions'} className="btn-accent px-8 md:px-12 py-4 md:py-5 text-lg md:text-xl font-black">Apply Now</button>
+                            <button onClick={() => window.location.href = '/contact'} className="bg-white/10 border border-white/20 px-8 md:px-12 py-4 md:py-5 rounded-2xl font-black text-lg md:text-xl hover:bg-white/20 transition-all">Visit PEA</button>
                         </div>
                     </div>
                 </div>
