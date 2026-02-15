@@ -310,7 +310,6 @@ export default function AlbumDetailPage() {
                                 )
                             )}
                         </div>
-            </div>
         </div>
     </section>
 
