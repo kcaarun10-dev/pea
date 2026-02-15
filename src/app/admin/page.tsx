@@ -46,6 +46,9 @@ const AdminDashboard = () => {
     const [showFacultyModal, setShowFacultyModal] = useState(false);
     const [newNotice, setNewNotice] = useState({ title: '', category: 'General', type: 'Announcement', content: '', image: '' });
     const [newGallery, setNewGallery] = useState({ title: '', src: '', category: 'School Events' });
+    const [galleryMode, setGalleryMode] = useState<'single' | 'bulk'>('single');
+    const [bulkGalleryImages, setBulkGalleryImages] = useState<{name: string, url: string}[]>([]);
+    const [bulkGalleryCategory, setBulkGalleryCategory] = useState('School Events');
     const [newFaculty, setNewFaculty] = useState({
         name: '', role: '', dept: '', image: '', email: '', phone: '',
         bio: '', qualification: '', experience: '', specialties: '', whatsapp: '',
@@ -2458,34 +2461,109 @@ const AdminDashboard = () => {
                                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                                className="bg-white rounded-[3rem] p-10 max-w-lg w-full shadow-2xl border border-white/20"
+                                className="bg-white rounded-[3rem] p-10 max-w-2xl w-full shadow-2xl border border-white/20 max-h-[90vh] overflow-y-auto custom-scrollbar"
                             >
                                 <div className="flex justify-between items-center mb-8">
                                     <div>
-                                        <h3 className="text-3xl font-black text-primary uppercase tracking-tighter leading-none">New Gallery Asset</h3>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">Upload visual story to the academy</p>
+                                        <h3 className="text-3xl font-black text-primary uppercase tracking-tighter leading-none">Add to Gallery</h3>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">Upload single or multiple photos</p>
                                     </div>
                                     <button onClick={() => setShowGalleryModal(false)} className="w-12 h-12 flex items-center justify-center bg-muted rounded-2xl hover:bg-red-500 hover:text-white transition-all"><X size={24} /></button>
                                 </div>
-                                <form onSubmit={handleAddGalleryItem} className="space-y-6">
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Image Title</label>
-                                            <input
-                                                type="text"
-                                                required
-                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300"
-                                                placeholder="e.g. Science Fair 2026"
-                                                value={newGallery.title}
-                                                onChange={(e) => setNewGallery({ ...newGallery, title: e.target.value })}
-                                            />
+                                
+                                {/* Tabs for Single vs Bulk */}
+                                <div className="flex gap-2 mb-6 p-1 bg-muted rounded-2xl">
+                                    <button
+                                        type="button"
+                                        onClick={() => setGalleryMode('single')}
+                                        className={`flex-1 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${galleryMode === 'single' ? 'bg-white text-primary shadow-md' : 'text-gray-400 hover:text-primary'}`}
+                                    >
+                                        Single Photo
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setGalleryMode('bulk')}
+                                        className={`flex-1 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${galleryMode === 'bulk' ? 'bg-white text-primary shadow-md' : 'text-gray-400 hover:text-primary'}`}
+                                    >
+                                        Bulk Upload
+                                    </button>
+                                </div>
+
+                                {galleryMode === 'single' ? (
+                                    <form onSubmit={handleAddGalleryItem} className="space-y-6">
+                                        <div className="grid grid-cols-2 gap-6">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Image Title</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300"
+                                                    placeholder="e.g. Science Fair 2026"
+                                                    value={newGallery.title}
+                                                    onChange={(e) => setNewGallery({ ...newGallery, title: e.target.value })}
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Category</label>
+                                                <select
+                                                    className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary appearance-none cursor-pointer"
+                                                    value={newGallery.category}
+                                                    onChange={(e) => setNewGallery({ ...newGallery, category: e.target.value })}
+                                                >
+                                                    <option>School Events</option>
+                                                    <option>Library</option>
+                                                    <option>Sports</option>
+                                                    <option>Classrooms</option>
+                                                </select>
+                                            </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Category</label>
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Image</label>
+                                            <div className="flex gap-4">
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    className="flex-1 px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300"
+                                                    placeholder={isUploading ? "Uploading..." : "Image URL or upload"}
+                                                    value={newGallery.src}
+                                                    onChange={(e) => setNewGallery({ ...newGallery, src: e.target.value })}
+                                                />
+                                                <div className="relative">
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                const url = await handleImageUpload(file);
+                                                                if (url) setNewGallery({ ...newGallery, src: url });
+                                                            }
+                                                        }}
+                                                    />
+                                                    <button type="button" className="h-full px-6 bg-primary text-white rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest">
+                                                        <Upload size={18} /> Upload
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            disabled={isSaving || isUploading}
+                                            className="w-full bg-accent text-primary py-5 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] shadow-2xl shadow-accent/20 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            {isSaving ? 'Adding...' : isUploading ? 'Optimizing Image...' : 'Add Photo'}
+                                        </button>
+                                    </form>
+                                ) : (
+                                    <div className="space-y-6">
+                                        {/* Bulk Upload Section */}
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Category for All Photos</label>
                                             <select
                                                 className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary appearance-none cursor-pointer"
-                                                value={newGallery.category}
-                                                onChange={(e) => setNewGallery({ ...newGallery, category: e.target.value })}
+                                                value={bulkGalleryCategory}
+                                                onChange={(e) => setBulkGalleryCategory(e.target.value)}
                                             >
                                                 <option>School Events</option>
                                                 <option>Library</option>
@@ -2493,45 +2571,114 @@ const AdminDashboard = () => {
                                                 <option>Classrooms</option>
                                             </select>
                                         </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Image Source URL</label>
-                                        <div className="flex gap-4">
-                                            <input
-                                                type="text"
-                                                required
-                                                className="flex-1 px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300"
-                                                placeholder={isUploading ? "Uploading visual story..." : "https://images.unsplash.com/..."}
-                                                value={newGallery.src}
-                                                onChange={(e) => setNewGallery({ ...newGallery, src: e.target.value })}
-                                            />
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Select Multiple Photos</label>
                                             <div className="relative">
                                                 <input
                                                     type="file"
                                                     accept="image/*"
-                                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                                    multiple
+                                                    className="absolute inset-0 opacity-0 cursor-pointer z-10"
                                                     onChange={async (e) => {
-                                                        const file = e.target.files?.[0];
-                                                        if (file) {
-                                                            const url = await handleImageUpload(file);
-                                                            if (url) setNewGallery({ ...newGallery, src: url });
+                                                        const files = e.target.files;
+                                                        if (files && files.length > 0) {
+                                                            setIsUploading(true);
+                                                            const uploadedImages: {name: string, url: string}[] = [];
+                                                            
+                                                            for (let i = 0; i < files.length; i++) {
+                                                                const url = await handleImageUpload(files[i]);
+                                                                if (url) {
+                                                                    uploadedImages.push({
+                                                                        name: files[i].name.replace(/\.[^/.]+$/, ""),
+                                                                        url: url
+                                                                    });
+                                                                }
+                                                            }
+                                                            
+                                                            setBulkGalleryImages(uploadedImages);
+                                                            setIsUploading(false);
+                                                            alert(`${uploadedImages.length} images uploaded successfully! Click 'Add All to Gallery' to save them.`);
                                                         }
                                                     }}
                                                 />
-                                                <button type="button" className="h-full px-6 bg-primary text-white rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest">
-                                                    <Upload size={18} /> Upload
-                                                </button>
+                                                <div className="w-full p-8 bg-muted rounded-2xl border-2 border-dashed border-accent/30 hover:border-accent transition-all flex flex-col items-center gap-3 cursor-pointer">
+                                                    <Upload size={32} className="text-accent" />
+                                                    <span className="text-sm font-bold text-gray-400">Click to select multiple photos</span>
+                                                    <span className="text-[10px] text-gray-400 font-medium">or drag and drop files here</span>
+                                                </div>
                                             </div>
                                         </div>
+
+                                        {/* Preview of selected images */}
+                                        {bulkGalleryImages.length > 0 && (
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                    {bulkGalleryImages.length} Photos Ready
+                                                </label>
+                                                <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto p-3 bg-muted rounded-2xl">
+                                                    {bulkGalleryImages.map((img, idx) => (
+                                                        <div key={idx} className="relative aspect-square rounded-xl overflow-hidden">
+                                                            <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setBulkGalleryImages(bulkGalleryImages.filter((_, i) => i !== idx))}
+                                                                className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-all"
+                                                            >
+                                                                <X size={12} />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                if (bulkGalleryImages.length === 0) {
+                                                    alert('Please select photos first');
+                                                    return;
+                                                }
+                                                setIsSaving(true);
+                                                let successCount = 0;
+                                                
+                                                for (const img of bulkGalleryImages) {
+                                                    try {
+                                                        const res = await fetch('/api/gallery', {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({
+                                                                title: img.name,
+                                                                src: img.url,
+                                                                category: bulkGalleryCategory
+                                                            })
+                                                        });
+                                                        if (res.ok) successCount++;
+                                                    } catch (error) {
+                                                        console.error('Failed to add:', img.name);
+                                                    }
+                                                }
+                                                
+                                                // Refresh gallery
+                                                const res = await fetch('/api/gallery');
+                                                if (res.ok) {
+                                                    const data = await res.json();
+                                                    setGallery(Array.isArray(data) ? data : []);
+                                                }
+                                                
+                                                setBulkGalleryImages([]);
+                                                setShowGalleryModal(false);
+                                                setIsSaving(false);
+                                                alert(`${successCount} photos added to gallery!`);
+                                            }}
+                                            disabled={isSaving || isUploading || bulkGalleryImages.length === 0}
+                                            className="w-full bg-accent text-primary py-5 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] shadow-2xl shadow-accent/20 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            {isSaving ? `Adding ${bulkGalleryImages.length} Photos...` : isUploading ? 'Uploading...' : `Add ${bulkGalleryImages.length} Photos to Gallery`}
+                                        </button>
                                     </div>
-                                    <button
-                                        type="submit"
-                                        disabled={isSaving || isUploading}
-                                        className="w-full bg-accent text-primary py-5 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] shadow-2xl shadow-accent/20 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
-                                    >
-                                        {isSaving ? 'Uploading...' : isUploading ? 'Optimizing Image...' : 'Upload Photo'}
-                                    </button>
-                                </form>
+                                )}
                             </motion.div>
                         </motion.div>
                     )}
