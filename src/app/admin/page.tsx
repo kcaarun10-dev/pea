@@ -50,6 +50,8 @@ const AdminDashboard = () => {
     const [bulkGalleryImages, setBulkGalleryImages] = useState<{name: string, url: string}[]>([]);
     const [bulkGalleryCategory, setBulkGalleryCategory] = useState('School Events');
     const [bulkGalleryTitle, setBulkGalleryTitle] = useState('');
+    const [bulkGalleryDescription, setBulkGalleryDescription] = useState('');
+    const [bulkGalleryEventDate, setBulkGalleryEventDate] = useState('');
     const [facebookUrls, setFacebookUrls] = useState('');
     const [facebookShareUrl, setFacebookShareUrl] = useState('');
     const [parsedFacebookImages, setParsedFacebookImages] = useState<{name: string, url: string}[]>([]);
@@ -2682,6 +2684,8 @@ const AdminDashboard = () => {
                                                         body: JSON.stringify({
                                                             title: albumTitle,
                                                             category: bulkGalleryCategory,
+                                                            description: bulkGalleryDescription,
+                                                            eventDate: bulkGalleryEventDate || new Date().toISOString().split('T')[0],
                                                             images: images,
                                                             coverImage: images[0]?.src || bulkGalleryImages[0].url
                                                         })
@@ -2691,6 +2695,8 @@ const AdminDashboard = () => {
                                                         alert(`Album "${albumTitle}" created with ${images.length} photos!`);
                                                         setBulkGalleryImages([]);
                                                         setBulkGalleryTitle('');
+                                                        setBulkGalleryDescription('');
+                                                        setBulkGalleryEventDate('');
                                                         setShowGalleryModal(false);
                                                     } else {
                                                         alert('Failed to create album');
@@ -2735,6 +2741,24 @@ const AdminDashboard = () => {
                                                 <option>Sports</option>
                                                 <option>Classrooms</option>
                                             </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Album Description (Optional)</label>
+                                            <textarea
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300 resize-none h-24"
+                                                placeholder="Describe this album..."
+                                                value={bulkGalleryDescription}
+                                                onChange={(e) => setBulkGalleryDescription(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Event Date (Optional)</label>
+                                            <input
+                                                type="date"
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary"
+                                                value={bulkGalleryEventDate}
+                                                onChange={(e) => setBulkGalleryEventDate(e.target.value)}
+                                            />
                                         </div>
 
                                         {/* Share Link Scraper */}
@@ -2937,6 +2961,8 @@ const AdminDashboard = () => {
                                                         body: JSON.stringify({
                                                             title: albumTitle,
                                                             category: bulkGalleryCategory,
+                                                            description: bulkGalleryDescription,
+                                                            eventDate: bulkGalleryEventDate || new Date().toISOString().split('T')[0],
                                                             images: images,
                                                             coverImage: images[0]?.src || parsedFacebookImages[0].url
                                                         })
@@ -2948,6 +2974,8 @@ const AdminDashboard = () => {
                                                         setFacebookUrls('');
                                                         setFacebookShareUrl('');
                                                         setBulkGalleryTitle('');
+                                                        setBulkGalleryDescription('');
+                                                        setBulkGalleryEventDate('');
                                                         setShowGalleryModal(false);
                                                     } else {
                                                         alert('Failed to create album');
