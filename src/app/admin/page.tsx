@@ -2722,7 +2722,18 @@ const AdminDashboard = () => {
                                                 const input = facebookUrls;
                                                 const imageUrls: {name: string, url: string}[] = [];
                                                 
-                                                // Extract URLs from iframe embed code
+                                                // Extract direct image URLs (scontent.fbcdn.net) - these are the actual image src
+                                                const directImageMatches = input.match(/https:\/\/scontent[^\s\"<>]+/g);
+                                                if (directImageMatches) {
+                                                    directImageMatches.forEach((url, idx) => {
+                                                        imageUrls.push({
+                                                            name: `FB Photo ${imageUrls.length + 1}`,
+                                                            url: url
+                                                        });
+                                                    });
+                                                }
+                                                
+                                                // Extract URLs from iframe embed code href parameter
                                                 const iframeMatch = input.match(/href=([^&\"\s]+)/g);
                                                 if (iframeMatch) {
                                                     iframeMatch.forEach(match => {
@@ -2730,8 +2741,7 @@ const AdminDashboard = () => {
                                                         if (decoded.includes('facebook.com') || decoded.includes('fb.com')) {
                                                             // Extract story_fbid for naming
                                                             const storyMatch = decoded.match(/story_fbid=([^&]+)/);
-                                                            const idMatch = decoded.match(/id=([^&]+)/);
-                                                            const name = storyMatch ? `FB Post ${storyMatch[1].slice(0, 8)}` : `FB Photo ${imageUrls.length + 1}`;
+                                                            const name = storyMatch ? `FB Post ${storyMatch[1].slice(0, 8)}` : `FB Link ${imageUrls.length + 1}`;
                                                             imageUrls.push({
                                                                 name: name,
                                                                 url: decoded
@@ -2740,36 +2750,42 @@ const AdminDashboard = () => {
                                                     });
                                                 }
                                                 
-                                                // Parse regular URLs from the textarea (lines that are URLs)
-                                                const lines = input.split('\n').map(line => line.trim()).filter(line => line.length > 0 && !line.startsWith('<'));
+                                                // Parse regular URLs from the textarea (lines that are URLs but not HTML)
+                                                const lines = input.split('\n').map(line => line.trim()).filter(line => line.length > 0 && !line.startsWith('<') && !line.includes('src='));
                                                 for (const url of lines) {
                                                     if (url.includes('fbcdn.net')) {
-                                                        // Direct image URL
-                                                        imageUrls.push({
-                                                            name: `Facebook Photo ${imageUrls.length + 1}`,
-                                                            url: url
-                                                        });
+                                                        // Already captured above, skip duplicate
+                                                        const exists = imageUrls.some(img => img.url === url);
+                                                        if (!exists) {
+                                                            imageUrls.push({
+                                                                name: `Facebook Photo ${imageUrls.length + 1}`,
+                                                                url: url
+                                                            });
+                                                        }
                                                     } else if (url.includes('facebook.com') || url.includes('fb.com')) {
-                                                        // Facebook post/album URL
-                                                        imageUrls.push({
-                                                            name: `FB Post ${imageUrls.length + 1}`,
-                                                            url: url
-                                                        });
+                                                        // Facebook post/album URL - add if not duplicate
+                                                        const exists = imageUrls.some(img => img.url === url);
+                                                        if (!exists) {
+                                                            imageUrls.push({
+                                                                name: `FB Post ${imageUrls.length + 1}`,
+                                                                url: url
+                                                            });
+                                                        }
                                                     }
                                                 }
                                                 
                                                 if (imageUrls.length === 0) {
-                                                    alert('No valid Facebook URLs found. Please paste Facebook embed code, direct image URLs, or post links.');
+                                                    alert('No valid Facebook URLs found. Please paste Facebook embed code with images, direct scontent.fbcdn.net image URLs, or post links.');
                                                     return;
                                                 }
                                                 
                                                 setParsedFacebookImages(imageUrls);
-                                                alert(`Found ${imageUrls.length} items ready to import!`);
+                                                alert(`Found ${imageUrls.length} images ready to import! Direct image URLs (scontent.fbcdn.net) will display properly.`);
                                             }}
                                             disabled={!facebookUrls.trim()}
                                             className="w-full bg-primary text-white py-4 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
                                         >
-                                            Extract from Facebook
+                                            Extract Image URLs
                                         </button>
 
                                         {/* Preview of parsed Facebook images */}
