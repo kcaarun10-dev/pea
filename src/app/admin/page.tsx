@@ -2906,41 +2906,6 @@ const AdminDashboard = () => {
                                                             <span className="truncate">{newFaculty.image ? 'Change Photo' : 'Upload Photo'}</span>
                                                         </div>
                                                     </div>
-                                                    {/* Bulk Upload Button */}
-                                                    <div className="relative">
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            multiple
-                                                            className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                                                            onChange={async (e) => {
-                                                                const files = e.target.files;
-                                                                if (files && files.length > 0) {
-                                                                    // Upload first image for this faculty member
-                                                                    const url = await handleImageUpload(files[0]);
-                                                                    if (url) setNewFaculty({ ...newFaculty, image: url });
-                                                                    
-                                                                    // Store additional images for reference
-                                                                    if (files.length > 1) {
-                                                                        const additionalUrls: string[] = [];
-                                                                        for (let i = 1; i < files.length; i++) {
-                                                                            const additionalUrl = await handleImageUpload(files[i]);
-                                                                            if (additionalUrl) additionalUrls.push(additionalUrl);
-                                                                        }
-                                                                        // Store in localStorage for gallery use
-                                                                        if (additionalUrls.length > 0) {
-                                                                            localStorage.setItem('bulkUploadImages', JSON.stringify(additionalUrls));
-                                                                            alert(`${files.length} images uploaded! First image set as profile. ${additionalUrls.length} additional images saved for gallery.`);
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }}
-                                                        />
-                                                        <button type="button" className="h-full px-4 bg-accent/20 text-accent rounded-2xl hover:bg-accent/30 transition-all flex items-center gap-2 font-black text-[10px] tracking-widest">
-                                                            <Upload size={16} />
-                                                            Bulk
-                                                        </button>
-                                                    </div>
                                                 </div>
                                                 {!newFaculty.image && !isUploading && (
                                                     <p className="text-[10px] text-gray-400 font-medium">No file chosen</p>
