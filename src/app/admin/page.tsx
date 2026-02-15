@@ -38,6 +38,7 @@ const AdminDashboard = () => {
     const [notices, setNotices] = useState<any[]>([]);
     const [admissions, setAdmissions] = useState<any[]>([]);
     const [gallery, setGallery] = useState<any[]>([]);
+    const [albums, setAlbums] = useState<any[]>([]);
     const [faculty, setFaculty] = useState<any[]>([]);
     const [messages, setMessages] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -109,10 +110,11 @@ const AdminDashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [noticesRes, admissionsRes, galleryRes, settingsRes, facultyRes, feedbackRes, academicsRes, aboutRes, homeRes, admissionsPageRes] = await Promise.all([
+                const [noticesRes, admissionsRes, galleryRes, albumsRes, settingsRes, facultyRes, feedbackRes, academicsRes, aboutRes, homeRes, admissionsPageRes] = await Promise.all([
                     fetch('/api/notices'),
                     fetch('/api/admissions'),
                     fetch('/api/gallery'),
+                    fetch('/api/albums'),
                     fetch('/api/settings'),
                     fetch('/api/faculty'),
                     fetch('/api/feedback'),
@@ -122,10 +124,11 @@ const AdminDashboard = () => {
                     fetch('/api/admissions-page')
                 ]);
 
-                const [noticesData, admissionsData, galleryData, settingsData, facultyData, feedbackData, currentAcademics, currentAbout, currentHome, currentAdmissionsPage] = await Promise.all([
+                const [noticesData, admissionsData, galleryData, albumsData, settingsData, facultyData, feedbackData, currentAcademics, currentAbout, currentHome, currentAdmissionsPage] = await Promise.all([
                     noticesRes.json(),
                     admissionsRes.json(),
                     galleryRes.json(),
+                    albumsRes.json(),
                     settingsRes.json(),
                     facultyRes.json(),
                     feedbackRes.json(),
@@ -185,6 +188,7 @@ const AdminDashboard = () => {
                 setNotices(Array.isArray(noticesData) ? noticesData : []);
                 setAdmissions(Array.isArray(admissionsData) ? admissionsData : []);
                 setGallery(Array.isArray(galleryData) ? galleryData : []);
+                setAlbums(Array.isArray(albumsData) ? albumsData : []);
 
                 // Seed Settings
                 setSettings(settingsData && typeof settingsData === 'object' && Object.keys(settingsData).length > 0 ? settingsData : defaultSettings);
@@ -490,6 +494,22 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleDeleteAlbum = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this album? All photos in this album will be removed.')) return;
+        try {
+            const res = await fetch('/api/albums', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+            if (res.ok) {
+                setAlbums(albums.filter(a => a.id !== id));
+            }
+        } catch (error) {
+            alert('Failed to delete album');
+        }
+    };
+
     const handleSaveAcademics = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSaving(true);
@@ -742,7 +762,7 @@ const AdminDashboard = () => {
                                         { title: 'New Admissions', count: admissions.length, trend: admissions.filter((a: any) => a.status === 'Pending').length + ' Pending', icon: <TrendingUp className="text-green-500" />, color: 'bg-green-50' },
                                         { title: 'Active Notices', count: notices.length, trend: 'Latest: ' + (notices[0]?.title?.slice(0, 10) || 'None') + '...', icon: <Bell className="text-blue-500" />, color: 'bg-blue-50' },
                                         { title: 'Total Faculty', count: faculty.length, trend: 'Academic Staff', icon: <Users className="text-orange-500" />, color: 'bg-orange-50' },
-                                        { title: 'Gallery Photos', count: gallery.length, trend: 'Managed Assets', icon: <ImageIcon className="text-purple-500" />, color: 'bg-purple-50' },
+                                        { title: 'Total Albums', count: albums.length, trend: 'Photo Collections', icon: <ImageIcon className="text-purple-500" />, color: 'bg-purple-50' },
                                     ].map((stat, i) => (
                                         <div key={i} className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col group card-hover relative overflow-hidden">
                                             <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
@@ -988,47 +1008,78 @@ const AdminDashboard = () => {
                             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        <h3 className="text-3xl font-black text-primary tracking-tighter uppercase leading-none">Visual Assets</h3>
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Manage website gallery and photos</p>
+                                        <h3 className="text-3xl font-black text-primary tracking-tighter uppercase leading-none">Photo Albums</h3>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">Manage website photo albums</p>
                                     </div>
                                     <button
                                         onClick={() => setShowGalleryModal(true)}
                                         className="bg-primary text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:shadow-2xl hover:shadow-primary/20 transition-all active:scale-95 flex items-center gap-2"
                                     >
-                                        <Plus size={18} /> Add Photo
+                                        <Plus size={18} /> Add Album
                                     </button>
                                 </div>
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                    {gallery.map((img, i) => (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {albums.map((album, i) => (
                                         <motion.div
-                                            key={i}
+                                            key={album.id}
                                             initial={{ opacity: 0, scale: 0.9 }}
                                             animate={{ opacity: 1, scale: 1 }}
                                             transition={{ delay: i * 0.05 }}
-                                            className="group relative aspect-square rounded-[2rem] overflow-hidden border-4 border-white shadow-xl hover:shadow-2xl transition-all"
+                                            className="group relative rounded-[2rem] overflow-hidden border-4 border-white shadow-xl hover:shadow-2xl transition-all bg-white"
                                         >
-                                            <img src={img.src || null} alt={img.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent opacity-0 group-hover:opacity-100 transition-all p-6 flex flex-col justify-end">
-                                                <p className="text-white font-black text-xs uppercase tracking-widest truncate mb-3">{img.title}</p>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => setEditingItem({ ...img, type: 'Gallery' })}
-                                                        className="flex-1 py-2 bg-white/10 backdrop-blur-md rounded-xl text-white hover:bg-white hover:text-primary transition-all text-[8px] font-black uppercase tracking-widest"
+                                            <div className="relative aspect-[4/3] overflow-hidden">
+                                                <img 
+                                                    src={album.coverImage || (album.images && album.images[0]?.src)} 
+                                                    alt={album.title} 
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                                                />
+                                                <div className="absolute top-3 left-3">
+                                                    <span className="px-3 py-1 bg-accent text-primary text-[10px] font-black uppercase tracking-widest rounded-full">
+                                                        {album.category}
+                                                    </span>
+                                                </div>
+                                                <div className="absolute top-3 right-3">
+                                                    <span className="px-3 py-1 bg-primary/80 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
+                                                        {album.images?.length || 0} Photos
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="p-5">
+                                                <h4 className="font-black text-primary text-sm uppercase tracking-tight truncate mb-2">{album.title}</h4>
+                                                <p className="text-[10px] text-gray-400 font-bold">
+                                                    {new Date(album.eventDate || album.createdAt).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric'
+                                                    })}
+                                                </p>
+                                                <div className="flex gap-2 mt-4">
+                                                    <a
+                                                        href={`/gallery/album/${album.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex-1 py-2 bg-primary text-white rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-primary/90 transition-all text-center"
                                                     >
-                                                        Edit
-                                                    </button>
+                                                        View
+                                                    </a>
                                                     <button
-                                                        onClick={() => handleDeleteGalleryItem(img.id)}
+                                                        onClick={() => handleDeleteAlbum(album.id)}
                                                         disabled={isSaving}
-                                                        className="p-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all disabled:opacity-50"
+                                                        className="px-3 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all disabled:opacity-50"
                                                     >
-                                                        <X size={14} />
+                                                        <X size={16} />
                                                     </button>
                                                 </div>
                                             </div>
                                         </motion.div>
                                     ))}
                                 </div>
+                                {albums.length === 0 && (
+                                    <div className="text-center py-16 bg-white rounded-[2rem]">
+                                        <ImageIcon size={48} className="text-gray-300 mx-auto mb-4" />
+                                        <p className="text-gray-400 font-bold">No albums yet. Create your first album!</p>
+                                    </div>
+                                )}
                             </div>
                         )}
 
