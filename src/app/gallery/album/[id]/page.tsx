@@ -33,6 +33,7 @@ export default function AlbumDetailPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [editData, setEditData] = useState<Partial<Album>>({});
     const [editImages, setEditImages] = useState<AlbumImage[]>([]);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
         const fetchAlbum = async () => {
@@ -53,15 +54,20 @@ export default function AlbumDetailPage() {
                     }
                 }
             } catch (error) {
-                console.error('Error fetching album:', error);
+                console.error('Failed to fetch album:', error);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (params.id) {
-            fetchAlbum();
-        }
+        // Check admin authentication
+        const checkAuth = () => {
+            const auth = localStorage.getItem('adminAuth');
+            setIsAuthenticated(auth === 'true');
+        };
+
+        fetchAlbum();
+        checkAuth();
     }, [params.id]);
 
     const handleSave = async () => {
@@ -156,69 +162,72 @@ export default function AlbumDetailPage() {
                         </button>
 
                         {/* Edit/Save Buttons */}
-                        <div className="flex items-center gap-2">
-                            {!isEditing ? (
-                                <button
-                                    onClick={() => setIsEditing(true)}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all"
-                                >
-                                    <Edit2 size={18} />
-                                    Edit Album
-                                </button>
-                            ) : (
-                                <>
+                        {isAuthenticated && (
+                            <div className="flex items-center gap-2">
+                                {!isEditing ? (
                                     <button
-                                        onClick={() => {
-                                            setIsEditing(false);
-                                            setEditData({
-                                                title: album.title,
-                                                category: album.category,
-                                                description: album.description || '',
-                                                eventDate: album.eventDate || album.createdAt?.split('T')[0] || ''
-                                            });
-                                            setEditImages([...album.images]);
-                                        }}
-                                        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-all"
-                                        disabled={isSaving}
+                                        onClick={() => setIsEditing(true)}
+                                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all"
                                     >
-                                        <X size={18} />
-                                        Cancel
+                                        <Edit2 size={18} />
+                                        Edit Album
                                     </button>
-                                    <button
-                                        onClick={handleSave}
-                                        disabled={isSaving}
-                                        className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-primary rounded-xl font-bold hover:bg-accent/90 transition-all disabled:opacity-50"
-                                    >
-                                        {isSaving ? (
-                                            <>
-                                                <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                                                Saving...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Save size={18} />
-                                                Save Changes
-                                            </>
-                                        )}
-                                    </button>
-                                </>
-                            )}
-                        </div>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={() => {
+                                                setIsEditing(false);
+                                                setEditData({
+                                                    title: album?.title,
+                                                    category: album?.category,
+                                                    description: album?.description || '',
+                                                    eventDate: album?.eventDate || album?.createdAt?.split('T')[0] || ''
+                                                });
+                                                setEditImages([...(album?.images || [])]);
+                                            }}
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-all"
+                                            disabled={isSaving}
+                                        >
+                                            <X size={18} />
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleSave}
+                                            disabled={isSaving}
+                                            className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-primary rounded-xl font-bold hover:bg-accent/90 transition-all disabled:opacity-50"
+                                        >
+                                            {isSaving ? (
+                                                <>
+                                                    <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                                                    Saving...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Save size={18} />
+                                                    Save Changes
+                                                </>
+                                            )}
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        )}
                     </div>
 
-                        <div className="relative rounded-[3rem] overflow-hidden">
-                            {/* Cover Image */}
-                            <div className="absolute inset-0">
-                                <img
-                                    src={isEditing ? (editImages[0]?.src || album.coverImage) : album.coverImage}
-                                    alt={album.title}
-                                    className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent"></div>
-                            </div>
+                    {/* Album Content */}
+                    <section className="relative rounded-[3rem] overflow-hidden">
+                        {/* Cover Image */}
+                        <div className="absolute inset-0">
+                            <img
+                                src={isEditing ? (editImages[0]?.src || album?.coverImage) : album?.coverImage}
+                                alt={album?.title}
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/50 to-transparent"></div>
+                        </div>
 
-                            <div className="relative p-8 md:p-16 pt-32 md:pt-48">
-                                <div className="max-w-3xl">
+                        <div className="relative p-8 md:p-16 pt-32 md:pt-48">
+                            <div className="max-w-3xl">
                                     {isEditing ? (
                                         <div className="space-y-4">
                                             <select
