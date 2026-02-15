@@ -1065,6 +1065,12 @@ const AdminDashboard = () => {
                                                     })}
                                                 </p>
                                                 <div className="flex gap-2 mt-4">
+                                                    <button
+                                                        onClick={() => setEditingItem(album)}
+                                                        className="flex-1 py-2 bg-accent text-primary rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-accent/90 transition-all text-center"
+                                                    >
+                                                        Edit
+                                                    </button>
                                                     <a
                                                         href={`/gallery/album/${album.id}`}
                                                         target="_blank"
@@ -3306,9 +3312,150 @@ const AdminDashboard = () => {
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </main >
-        </div >
+                {/* Edit Album Modal */}
+                <AnimatePresence>
+                    {editingItem && editingItem.type === 'Album' && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-primary/60 backdrop-blur-xl z-[100] flex items-center justify-center p-4"
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                className="bg-white rounded-[3rem] p-10 max-w-4xl w-full shadow-2xl border border-white/20 max-h-[85vh] overflow-y-auto custom-scrollbar"
+                            >
+                                <div className="flex justify-between items-center mb-8">
+                                    <div>
+                                        <h3 className="text-3xl font-black text-primary uppercase tracking-tighter leading-none">Edit Album</h3>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-2">Update album details and image titles</p>
+                                    </div>
+                                    <button onClick={() => setEditingItem(null)} className="w-12 h-12 flex items-center justify-center bg-muted rounded-2xl hover:bg-red-500 hover:text-white transition-all"><X size={24} /></button>
+                                </div>
+                                <form onSubmit={async (e) => {
+                                    e.preventDefault();
+                                    setIsSaving(true);
+                                    try {
+                                        const res = await fetch('/api/albums', {
+                                            method: 'PUT',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify(editingItem)
+                                        });
+                                        if (res.ok) {
+                                            const updated = await res.json();
+                                            setAlbums(albums.map(a => a.id === updated.id ? updated : a));
+                                            setEditingItem(null);
+                                            alert('Album updated successfully!');
+                                        } else {
+                                            alert('Failed to update album');
+                                        }
+                                    } catch (error) {
+                                        console.error('Update error:', error);
+                                        alert('Failed to update album');
+                                    } finally {
+                                        setIsSaving(false);
+                                    }
+                                }} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Album Title</label>
+                                            <input
+                                                type="text"
+                                                required
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary"
+                                                value={editingItem.title || ''}
+                                                onChange={(e) => setEditingItem({ ...editingItem, title: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Category</label>
+                                            <select
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary appearance-none cursor-pointer"
+                                                value={editingItem.category || ''}
+                                                onChange={(e) => setEditingItem({ ...editingItem, category: e.target.value })}
+                                            >
+                                                <option>School Events</option>
+                                                <option>Library</option>
+                                                <option>Sports</option>
+                                                <option>Classrooms</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Event Date</label>
+                                            <input
+                                                type="date"
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary"
+                                                value={editingItem.eventDate || ''}
+                                                onChange={(e) => setEditingItem({ ...editingItem, eventDate: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Description</label>
+                                            <textarea
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary resize-none h-24"
+                                                placeholder="Album description..."
+                                                value={editingItem.description || ''}
+                                                onChange={(e) => setEditingItem({ ...editingItem, description: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Image Titles Editor */}
+                                    <div className="space-y-4">
+                                        <h4 className="text-lg font-black text-primary uppercase tracking-tighter">Image Titles</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-60 overflow-y-auto p-4 bg-muted rounded-2xl">
+                                            {editingItem.images?.map((image: any, index: number) => (
+                                                <div key={index} className="space-y-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <img 
+                                                            src={image.src} 
+                                                            alt={image.title || `Photo ${index + 1}`} 
+                                                            className="w-12 h-12 rounded-xl object-cover"
+                                                        />
+                                                        <span className="text-[10px] font-bold text-gray-400">
+                                                            {index === 0 ? 'Cover' : `Photo ${index + 1}`}
+                                                        </span>
+                                                    </div>
+                                                    <input
+                                                        type="text"
+                                                        className="w-full px-4 py-2 rounded-xl bg-white border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary text-sm"
+                                                        placeholder="Image title..."
+                                                        value={image.title || ''}
+                                                        onChange={(e) => {
+                                                            const updatedImages = [...editingItem.images];
+                                                            updatedImages[index] = { ...updatedImages[index], title: e.target.value };
+                                                            setEditingItem({ ...editingItem, images: updatedImages });
+                                                        }}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex gap-4">
+                                        <button
+                                            type="submit"
+                                            disabled={isSaving}
+                                            className="flex-1 bg-accent text-primary py-5 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] shadow-2xl shadow-accent/20 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            {isSaving ? 'Updating...' : 'Update Album'}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditingItem(null)}
+                                            className="flex-1 bg-gray-200 text-gray-700 py-5 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] hover:bg-gray-300 transition-all"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </motion.div>
+                        )}
+                    )}
+                </AnimatePresence>
+            </div>
+        </div>
     );
-};
-
-export default AdminDashboard;
+}
