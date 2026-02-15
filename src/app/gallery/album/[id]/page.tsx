@@ -311,7 +311,8 @@ export default function AlbumDetailPage() {
                             )}
                         </div>
             </div>
-        </section>
+        </div>
+    </section>
 
             {/* Image Grid */}
             <section className="pb-20 px-4">
