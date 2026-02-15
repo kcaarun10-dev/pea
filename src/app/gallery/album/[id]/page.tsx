@@ -292,7 +292,6 @@ export default function AlbumDetailPage() {
                                     )}
                                 </div>
                             </div>
-                        </div>
 
                         {/* Description Section */}
                         <div className="mt-6">
