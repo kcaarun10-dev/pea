@@ -46,9 +46,11 @@ const AdminDashboard = () => {
     const [showFacultyModal, setShowFacultyModal] = useState(false);
     const [newNotice, setNewNotice] = useState({ title: '', category: 'General', type: 'Announcement', content: '', image: '' });
     const [newGallery, setNewGallery] = useState({ title: '', src: '', category: 'School Events' });
-    const [galleryMode, setGalleryMode] = useState<'single' | 'bulk'>('single');
+    const [galleryMode, setGalleryMode] = useState<'single' | 'bulk' | 'facebook'>('single');
     const [bulkGalleryImages, setBulkGalleryImages] = useState<{name: string, url: string}[]>([]);
     const [bulkGalleryCategory, setBulkGalleryCategory] = useState('School Events');
+    const [facebookUrls, setFacebookUrls] = useState('');
+    const [parsedFacebookImages, setParsedFacebookImages] = useState<{name: string, url: string}[]>([]);
     const [newFaculty, setNewFaculty] = useState({
         name: '', role: '', dept: '', image: '', email: '', phone: '',
         bio: '', qualification: '', experience: '', specialties: '', whatsapp: '',
@@ -2471,7 +2473,7 @@ const AdminDashboard = () => {
                                     <button onClick={() => setShowGalleryModal(false)} className="w-12 h-12 flex items-center justify-center bg-muted rounded-2xl hover:bg-red-500 hover:text-white transition-all"><X size={24} /></button>
                                 </div>
                                 
-                                {/* Tabs for Single vs Bulk */}
+                                {/* Tabs for Single vs Bulk vs Facebook */}
                                 <div className="flex gap-2 mb-6 p-1 bg-muted rounded-2xl">
                                     <button
                                         type="button"
@@ -2486,6 +2488,13 @@ const AdminDashboard = () => {
                                         className={`flex-1 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${galleryMode === 'bulk' ? 'bg-white text-primary shadow-md' : 'text-gray-400 hover:text-primary'}`}
                                     >
                                         Bulk Upload
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setGalleryMode('facebook')}
+                                        className={`flex-1 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${galleryMode === 'facebook' ? 'bg-white text-primary shadow-md' : 'text-gray-400 hover:text-primary'}`}
+                                    >
+                                        From Facebook
                                     </button>
                                 </div>
 
@@ -2678,7 +2687,142 @@ const AdminDashboard = () => {
                                             {isSaving ? `Adding ${bulkGalleryImages.length} Photos...` : isUploading ? 'Uploading...' : `Add ${bulkGalleryImages.length} Photos to Gallery`}
                                         </button>
                                     </div>
-                                )}
+                                ) : galleryMode === 'facebook' ? (
+                                    <div className="space-y-6">
+                                        {/* Facebook Import Section */}
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Category for All Photos</label>
+                                            <select
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary appearance-none cursor-pointer"
+                                                value={bulkGalleryCategory}
+                                                onChange={(e) => setBulkGalleryCategory(e.target.value)}
+                                            >
+                                                <option>School Events</option>
+                                                <option>Library</option>
+                                                <option>Sports</option>
+                                                <option>Classrooms</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Paste Facebook Image URLs</label>
+                                            <p className="text-[10px] text-gray-400 font-medium">Paste Facebook image links (one per line) or a Facebook album/post URL</p>
+                                            <textarea
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all h-32 font-bold text-primary placeholder:text-gray-300 resize-none text-sm"
+                                                placeholder="https://scontent.fktm8-1.fna.fbcdn.net/v/t1.6435-9/...&#10;https://scontent.fktm8-1.fna.fbcdn.net/v/t1.6435-9/...&#10;Or paste album URL: https://facebook.com/pea.babai3/posts/..."
+                                                value={facebookUrls}
+                                                onChange={(e) => setFacebookUrls(e.target.value)}
+                                            />
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                // Parse Facebook URLs from the textarea
+                                                const urls = facebookUrls.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+                                                const imageUrls: {name: string, url: string}[] = [];
+                                                
+                                                for (const url of urls) {
+                                                    // Check if it's a direct image URL (scontent.fbcdn.net)
+                                                    if (url.includes('fbcdn.net') || url.includes('facebook.com') || url.includes('fb.com')) {
+                                                        imageUrls.push({
+                                                            name: `Facebook Photo ${imageUrls.length + 1}`,
+                                                            url: url
+                                                        });
+                                                    }
+                                                }
+                                                
+                                                if (imageUrls.length === 0) {
+                                                    alert('No valid Facebook image URLs found. Please paste direct image URLs from Facebook.');
+                                                    return;
+                                                }
+                                                
+                                                setParsedFacebookImages(imageUrls);
+                                                alert(`Found ${imageUrls.length} Facebook image URLs ready to import!`);
+                                            }}
+                                            disabled={!facebookUrls.trim()}
+                                            className="w-full bg-primary text-white py-4 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            Parse Facebook URLs
+                                        </button>
+
+                                        {/* Preview of parsed Facebook images */}
+                                        {parsedFacebookImages.length > 0 && (
+                                            <div className="space-y-3">
+                                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                    {parsedFacebookImages.length} Facebook Photos Ready
+                                                </label>
+                                                <div className="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto p-3 bg-muted rounded-2xl">
+                                                    {parsedFacebookImages.map((img, idx) => (
+                                                        <div key={idx} className="relative aspect-square rounded-xl overflow-hidden bg-gray-200">
+                                                            <img 
+                                                                src={img.url} 
+                                                                alt={img.name} 
+                                                                className="w-full h-full object-cover"
+                                                                onError={(e) => {
+                                                                    (e.target as HTMLImageElement).src = '/images/placeholder.webp';
+                                                                }}
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setParsedFacebookImages(parsedFacebookImages.filter((_, i) => i !== idx))}
+                                                                className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-all"
+                                                            >
+                                                                <X size={12} />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                if (parsedFacebookImages.length === 0) {
+                                                    alert('Please parse Facebook URLs first');
+                                                    return;
+                                                }
+                                                setIsSaving(true);
+                                                let successCount = 0;
+                                                
+                                                for (const img of parsedFacebookImages) {
+                                                    try {
+                                                        const res = await fetch('/api/gallery', {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({
+                                                                title: img.name,
+                                                                src: img.url,
+                                                                category: bulkGalleryCategory
+                                                            })
+                                                        });
+                                                        if (res.ok) successCount++;
+                                                    } catch (error) {
+                                                        console.error('Failed to add:', img.name);
+                                                    }
+                                                }
+                                                
+                                                // Refresh gallery
+                                                const res = await fetch('/api/gallery');
+                                                if (res.ok) {
+                                                    const data = await res.json();
+                                                    setGallery(Array.isArray(data) ? data : []);
+                                                }
+                                                
+                                                setParsedFacebookImages([]);
+                                                setFacebookUrls('');
+                                                setShowGalleryModal(false);
+                                                setIsSaving(false);
+                                                alert(`${successCount} Facebook photos added to gallery!`);
+                                            }}
+                                            disabled={isSaving || parsedFacebookImages.length === 0}
+                                            className="w-full bg-accent text-primary py-5 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] shadow-2xl shadow-accent/20 hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
+                                        >
+                                            {isSaving ? `Adding ${parsedFacebookImages.length} Photos...` : `Add ${parsedFacebookImages.length} Facebook Photos to Gallery`}
+                                        </button>
+                                    </div>
+                                ) : null}
                             </motion.div>
                         </motion.div>
                     )}
