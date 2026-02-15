@@ -2571,31 +2571,91 @@ const AdminDashboard = () => {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Profile Photo URL</label>
-                                        <div className="flex gap-4">
-                                            <input
-                                                type="text"
-                                                className="flex-1 px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300"
-                                                placeholder={isUploading ? "Uploading profile..." : "e.g. /uploads/principal.jpg"}
-                                                value={newFaculty.image}
-                                                onChange={(e) => setNewFaculty({ ...newFaculty, image: e.target.value })}
-                                            />
-                                            <div className="relative">
+                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Profile Photo</label>
+                                        <div className="flex gap-4 items-start">
+                                            {/* Image Preview */}
+                                            {newFaculty.image && (
+                                                <div className="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-accent shadow-lg">
+                                                    <img src={newFaculty.image} alt="Preview" className="w-full h-full object-cover" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setNewFaculty({ ...newFaculty, image: '' })}
+                                                        className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-all"
+                                                    >
+                                                        <X size={12} />
+                                                    </button>
+                                                </div>
+                                            )}
+                                            <div className="flex-1 space-y-2">
                                                 <input
-                                                    type="file"
-                                                    accept="image/*"
-                                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                                    onChange={async (e) => {
-                                                        const file = e.target.files?.[0];
-                                                        if (file) {
-                                                            const url = await handleImageUpload(file);
-                                                            if (url) setNewFaculty({ ...newFaculty, image: url });
-                                                        }
-                                                    }}
+                                                    type="text"
+                                                    className="w-full px-6 py-3 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300 text-sm"
+                                                    placeholder={isUploading ? "Uploading..." : "Image URL or upload below"}
+                                                    value={newFaculty.image}
+                                                    onChange={(e) => setNewFaculty({ ...newFaculty, image: e.target.value })}
                                                 />
-                                                <button type="button" className="h-full px-6 bg-primary text-white rounded-2xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 font-black uppercase text-[10px] tracking-widest">
-                                                    <Upload size={18} /> Upload
-                                                </button>
+                                                <div className="flex gap-2">
+                                                    {/* Single File Upload */}
+                                                    <div className="relative flex-1">
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                                            onChange={async (e) => {
+                                                                const file = e.target.files?.[0];
+                                                                if (file) {
+                                                                    const url = await handleImageUpload(file);
+                                                                    if (url) setNewFaculty({ ...newFaculty, image: url });
+                                                                }
+                                                            }}
+                                                        />
+                                                        <div className="w-full px-4 py-3 bg-muted rounded-2xl flex items-center gap-3 text-sm font-bold text-gray-400 hover:bg-muted/80 transition-all">
+                                                            <Upload size={16} className="text-accent" />
+                                                            <span className="truncate">{newFaculty.image ? 'Change Photo' : 'Upload Photo'}</span>
+                                                        </div>
+                                                    </div>
+                                                    {/* Bulk Upload Button */}
+                                                    <div className="relative">
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            multiple
+                                                            className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                                            onChange={async (e) => {
+                                                                const files = e.target.files;
+                                                                if (files && files.length > 0) {
+                                                                    // Upload first image for this faculty member
+                                                                    const url = await handleImageUpload(files[0]);
+                                                                    if (url) setNewFaculty({ ...newFaculty, image: url });
+                                                                    
+                                                                    // Store additional images for reference
+                                                                    if (files.length > 1) {
+                                                                        const additionalUrls: string[] = [];
+                                                                        for (let i = 1; i < files.length; i++) {
+                                                                            const additionalUrl = await handleImageUpload(files[i]);
+                                                                            if (additionalUrl) additionalUrls.push(additionalUrl);
+                                                                        }
+                                                                        // Store in localStorage for gallery use
+                                                                        if (additionalUrls.length > 0) {
+                                                                            localStorage.setItem('bulkUploadImages', JSON.stringify(additionalUrls));
+                                                                            alert(`${files.length} images uploaded! First image set as profile. ${additionalUrls.length} additional images saved for gallery.`);
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }}
+                                                        />
+                                                        <button type="button" className="h-full px-4 bg-accent/20 text-accent rounded-2xl hover:bg-accent/30 transition-all flex items-center gap-2 font-black text-[10px] tracking-widest">
+                                                            <Upload size={16} />
+                                                            Bulk
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                {!newFaculty.image && !isUploading && (
+                                                    <p className="text-[10px] text-gray-400 font-medium">No file chosen</p>
+                                                )}
+                                                {isUploading && (
+                                                    <p className="text-[10px] text-accent font-bold animate-pulse">Uploading...</p>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
