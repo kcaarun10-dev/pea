@@ -2706,11 +2706,16 @@ const AdminDashboard = () => {
                                         </div>
                                         
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Paste Facebook Image URLs</label>
-                                            <p className="text-[10px] text-gray-400 font-medium">Paste Facebook image links, post URLs, or embed code</p>
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Paste Facebook Image URLs or Embed Code</label>
+                                            <div className="p-3 bg-accent/10 rounded-xl text-[10px] text-primary/80 font-medium space-y-1">
+                                                <p><strong>How to get image URLs:</strong></p>
+                                                <p>1. Go to Facebook post → Right-click image → "Copy image address"</p>
+                                                <p>2. Or use Browser DevTools (F12) → Inspect image → Copy src URL</p>
+                                                <p>3. Paste multiple URLs (one per line) or embed code below</p>
+                                            </div>
                                             <textarea
                                                 className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all h-40 font-bold text-primary placeholder:text-gray-300 resize-none text-sm"
-                                                placeholder={`Paste Facebook embed code or URLs:\n\n<iframe src="https://www.facebook.com/plugins/post.php?href=...\n\nOr direct image URLs:\nhttps://scontent.fktm8-1.fna.fbcdn.net/...\n\nOr post links:\nhttps://facebook.com/pea.babai3/posts/...`}
+                                                placeholder={`Paste Facebook image URLs here:\n\nhttps://scontent.fktm8-1.fna.fbcdn.net/v/t39.30808-6/...\nhttps://scontent.fktm8-1.fna.fbcdn.net/v/t39.30808-6/...\nhttps://scontent.fktm8-1.fna.fbcdn.net/v/t39.30808-6/...\n\nOr paste embed code with images`}
                                                 value={facebookUrls}
                                                 onChange={(e) => setFacebookUrls(e.target.value)}
                                             />
@@ -2722,29 +2727,30 @@ const AdminDashboard = () => {
                                                 const input = facebookUrls;
                                                 const imageUrls: {name: string, url: string}[] = [];
                                                 
-                                                // Extract direct image URLs from scontent.fbcdn.net or scontent.*.fna.fbcdn.net
-                                                // Match full URLs including query parameters
-                                                const imageRegex = /https:\/\/scontent[^\s"'<>]+/g;
-                                                const directImageMatches = input.match(imageRegex);
-                                                if (directImageMatches) {
-                                                    directImageMatches.forEach((url) => {
-                                                        // Clean up the URL - remove trailing quotes or tags
-                                                        const cleanUrl = url.replace(/["'<>]+$/, '');
-                                                        const exists = imageUrls.some(img => img.url === cleanUrl);
-                                                        if (!exists) {
-                                                            imageUrls.push({
-                                                                name: `FB Photo ${imageUrls.length + 1}`,
-                                                                url: cleanUrl
-                                                            });
-                                                        }
-                                                    });
+                                                // Extract ALL scontent.fbcdn.net URLs - very aggressive matching
+                                                // Match: https://scontent-ams2-1.xx.fbcdn.net or https://scontent.fktm8-1.fna.fbcdn.net etc.
+                                                const scontentRegex = /https:\/\/scontent[^\s"'<>]+/gi;
+                                                let match;
+                                                while ((match = scontentRegex.exec(input)) !== null) {
+                                                    let url = match[0];
+                                                    // Clean up trailing punctuation
+                                                    url = url.replace(/["'<>;,]+$/, '');
+                                                    // Remove URL-encoded entities at end
+                                                    url = url.replace(/&amp;$/, '');
+                                                    
+                                                    const exists = imageUrls.some(img => img.url === url);
+                                                    if (!exists && url.length > 20) {
+                                                        imageUrls.push({
+                                                            name: `FB Photo ${imageUrls.length + 1}`,
+                                                            url: url
+                                                        });
+                                                    }
                                                 }
                                                 
-                                                // Also try to extract from data-src or src attributes in embed code
-                                                const srcRegex = /(?:src|data-src)=["']?(https:\/\/scontent[^"'\s>]+)/g;
-                                                let srcMatch;
-                                                while ((srcMatch = srcRegex.exec(input)) !== null) {
-                                                    const url = srcMatch[1].replace(/["'<>]+$/, '');
+                                                // Also extract from src="..." or data-src="..." attributes
+                                                const attrRegex = /(?:src|data-src)\s*=\s*["'](https:\/\/scontent[^"']+)["']/gi;
+                                                while ((match = attrRegex.exec(input)) !== null) {
+                                                    let url = match[1];
                                                     const exists = imageUrls.some(img => img.url === url);
                                                     if (!exists) {
                                                         imageUrls.push({
@@ -2754,59 +2760,31 @@ const AdminDashboard = () => {
                                                     }
                                                 }
                                                 
-                                                // Extract URLs from iframe embed code href parameter (post links)
-                                                const iframeMatch = input.match(/href=([^&"\s]+)/g);
-                                                if (iframeMatch) {
-                                                    iframeMatch.forEach(match => {
-                                                        const decoded = decodeURIComponent(match.replace('href=', ''));
-                                                        if (decoded.includes('facebook.com') || decoded.includes('fb.com')) {
-                                                            const storyMatch = decoded.match(/story_fbid=([^&]+)/);
-                                                            const name = storyMatch ? `FB Post ${storyMatch[1].slice(0, 8)}` : `FB Link ${imageUrls.length + 1}`;
-                                                            const exists = imageUrls.some(img => img.url === decoded);
-                                                            if (!exists) {
-                                                                imageUrls.push({
-                                                                    name: name,
-                                                                    url: decoded
-                                                                });
-                                                            }
-                                                        }
-                                                    });
-                                                }
-                                                
-                                                // Parse regular URLs from the textarea (lines that are URLs but not HTML)
-                                                const lines = input.split('\n').map(line => line.trim()).filter(line => line.length > 0 && !line.startsWith('<'));
-                                                for (const url of lines) {
-                                                    if (url.includes('fbcdn.net') || url.includes('fna.fbcdn')) {
-                                                        const exists = imageUrls.some(img => img.url === url);
-                                                        if (!exists) {
-                                                            imageUrls.push({
-                                                                name: `Facebook Photo ${imageUrls.length + 1}`,
-                                                                url: url
-                                                            });
-                                                        }
-                                                    } else if ((url.includes('facebook.com') || url.includes('fb.com')) && !url.includes('plugins')) {
-                                                        const exists = imageUrls.some(img => img.url === url);
-                                                        if (!exists) {
-                                                            imageUrls.push({
-                                                                name: `FB Post ${imageUrls.length + 1}`,
-                                                                url: url
-                                                            });
-                                                        }
+                                                // Extract from fbcdn.net without scontent prefix
+                                                const fbcdnRegex = /https:\/\/[^\s"'<>]*fbcdn\.net[^\s"'<>]+/gi;
+                                                while ((match = fbcdnRegex.exec(input)) !== null) {
+                                                    let url = match[0].replace(/["'<>;,]+$/, '');
+                                                    const exists = imageUrls.some(img => img.url === url);
+                                                    if (!exists && url.includes('scontent')) {
+                                                        imageUrls.push({
+                                                            name: `FB Photo ${imageUrls.length + 1}`,
+                                                            url: url
+                                                        });
                                                     }
                                                 }
                                                 
                                                 if (imageUrls.length === 0) {
-                                                    alert('No valid Facebook URLs found. Please paste Facebook embed code with images, direct scontent.fbcdn.net image URLs, or post links.');
+                                                    alert('No Facebook image URLs found. Please paste direct image URLs (scontent.fbcdn.net) from Facebook.');
                                                     return;
                                                 }
                                                 
                                                 setParsedFacebookImages(imageUrls);
-                                                alert(`Found ${imageUrls.length} images ready to import! Direct image URLs (scontent.fbcdn.net) will display properly.`);
+                                                alert(`Found ${imageUrls.length} images ready to import!`);
                                             }}
                                             disabled={!facebookUrls.trim()}
                                             className="w-full bg-primary text-white py-4 font-black uppercase tracking-[0.2em] rounded-2xl text-[10px] hover:scale-[1.02] transition-all active:scale-95 disabled:opacity-50"
                                         >
-                                            Extract All Images
+                                            Extract Images
                                         </button>
 
                                         {/* Preview of parsed Facebook images */}
