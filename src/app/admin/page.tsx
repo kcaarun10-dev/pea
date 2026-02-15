@@ -146,7 +146,18 @@ const AdminDashboard = () => {
                         { title: 'Expert Faculty', description: 'Experienced and dedicated teachers.' },
                         { title: 'Modern Facilities', description: 'State-of-the-art labs and classrooms.' }
                     ],
-                    message: { title: 'Principal\'s Message', subtitle: 'Message from Principal', content: 'Welcome to our school...', image: '' },
+                    message: { 
+                        title: 'Principal\'s Message', 
+                        subtitle: 'Message from Principal', 
+                        content: 'Welcome to our school...', 
+                        quote: 'Excellent Education for a Brighter Tomorrow',
+                        paragraphs: [
+                            'Welcome to Purandhara Everest Academy, where we are committed to providing excellence in education and nurturing the leaders of tomorrow.',
+                            'Our dedicated faculty and comprehensive curriculum ensure that each student receives personalized attention and achieves their full potential.',
+                            'We believe in creating a supportive learning environment that fosters creativity, critical thinking, and character development.'
+                        ], 
+                        image: '' 
+                    },
                     newsletter: { title: 'Join the', titleAccent: 'PEA Newsletter', description: 'Get the latest school updates...' }
                 };
 
@@ -1363,6 +1374,17 @@ const AdminDashboard = () => {
                                                                 className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none font-bold text-primary text-xs h-24 resize-none mb-2"
                                                             />
                                                         ))}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const next = { ...homeData };
+                                                                next.message.paragraphs = [...(next.message.paragraphs || []), ''];
+                                                                setHomeData(next);
+                                                            }}
+                                                            className="w-full py-2 bg-accent text-primary rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-accent/90 transition-all"
+                                                        >
+                                                            Add Paragraph
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div className="space-y-4">

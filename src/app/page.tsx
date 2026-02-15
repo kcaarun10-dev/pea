@@ -149,7 +149,7 @@ export default function Home() {
                 />
               </div>
               <div className="absolute -bottom-6 -right-6 md:-bottom-10 md:-right-10 bg-white p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl border border-gray-100 hidden md:block">
-                <span className="text-accent font-black italic text-2xl md:text-4xl leading-none">"{homeData?.message?.quote || 'Education is the key to success.'}"</span>
+                <span className="text-accent font-black italic text-2xl md:text-4xl leading-none">"{homeData?.message?.quote || 'Excellent Education for a Brighter Tomorrow'}"</span>
                 <p className="text-primary font-black uppercase tracking-widest text-[10px] mt-2">{principal?.name || 'Principal'}</p>
               </div>
             </motion.div>
@@ -162,7 +162,7 @@ export default function Home() {
               <span className="text-accent text-xs font-black uppercase tracking-[0.3em] mb-4 block">{homeData?.message?.subtitle || 'Message from Principal'}</span>
               <h2 className="text-3xl md:text-5xl font-black text-primary mb-6 md:mb-8 tracking-tighter uppercase leading-tight">{(homeData?.message?.title || 'Academic Leadership').split(' ').slice(0, 3).join(' ')} <br /> <span className="text-accent italic">{(homeData?.message?.title || 'Academic Leadership').split(' ').slice(3).join(' ')}</span></h2>
               <div className="space-y-6 text-lg text-muted-foreground font-medium leading-relaxed italic">
-                {(homeData?.message?.paragraphs || []).map((p: string, i: number) => (
+                {(homeData?.message?.paragraphs || ['Welcome to our school...']).map((p: string, i: number) => (
                   <p key={i}>"{p}"</p>
                 ))}
               </div>
