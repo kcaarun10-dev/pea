@@ -2710,7 +2710,7 @@ const AdminDashboard = () => {
                                             <p className="text-[10px] text-gray-400 font-medium">Paste Facebook image links, post URLs, or embed code</p>
                                             <textarea
                                                 className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all h-40 font-bold text-primary placeholder:text-gray-300 resize-none text-sm"
-                                                placeholder="Paste Facebook embed code or URLs:&#10;&#10;<iframe src=\"https://www.facebook.com/plugins/post.php?href=...&#10;&#10;Or direct image URLs:&#10;https://scontent.fktm8-1.fna.fbcdn.net/...&#10;&#10;Or post links:&#10;https://facebook.com/pea.babai3/posts/..."
+                                                placeholder={`Paste Facebook embed code or URLs:\n\n<iframe src="https://www.facebook.com/plugins/post.php?href=...\n\nOr direct image URLs:\nhttps://scontent.fktm8-1.fna.fbcdn.net/...\n\nOr post links:\nhttps://facebook.com/pea.babai3/posts/...`}
                                                 value={facebookUrls}
                                                 onChange={(e) => setFacebookUrls(e.target.value)}
                                             />
