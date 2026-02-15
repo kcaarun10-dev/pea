@@ -17,27 +17,54 @@ export async function POST(request: Request) {
         const images: { name: string; url: string }[] = [];
 
         try {
-            // Fetch the Facebook page
+            // Fetch the Facebook page with more realistic browser headers
             const response = await fetch(url, {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.5',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
                     'Accept-Encoding': 'gzip, deflate, br',
+                    'Cache-Control': 'max-age=0',
                     'Connection': 'keep-alive',
                     'Upgrade-Insecure-Requests': '1',
+                    'Sec-Fetch-Dest': 'document',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-User': '?1',
+                    'DNT': '1',
                 },
                 redirect: 'follow',
             });
 
             if (!response.ok) {
+                // Facebook blocks scraping - return helpful message
+                if (response.status === 400 || response.status === 403 || response.status === 429) {
+                    return NextResponse.json({ 
+                        error: 'Facebook is blocking automated access. This is common for share links.',
+                        images: [],
+                        fallback: 'Please use the "Paste Image URLs" method below. Right-click on Facebook images → "Copy image address" and paste them.',
+                        status: response.status
+                    }, { status: 200 });
+                }
+                
                 return NextResponse.json({ 
                     error: `Failed to fetch page: ${response.status}`,
-                    images: []
+                    images: [],
+                    fallback: 'Please use the "Paste Image URLs" method below.'
                 }, { status: 200 });
             }
 
             const html = await response.text();
+            
+            // Check if we got a login page or redirect
+            if (html.includes('login') || html.includes('Log In') || html.length < 1000) {
+                return NextResponse.json({ 
+                    error: 'Facebook requires login to view this post.',
+                    images: [],
+                    fallback: 'Please use the "Paste Image URLs" method below. Right-click on Facebook images → "Copy image address" and paste them.'
+                }, { status: 200 });
+            }
+            
             const $ = cheerio.load(html);
 
             // Look for image URLs in various places
@@ -100,6 +127,14 @@ export async function POST(request: Request) {
             // Sort by URL length - longer URLs usually have higher quality parameters
             uniqueImages.sort((a, b) => b.url.length - a.url.length);
 
+            if (uniqueImages.length === 0) {
+                return NextResponse.json({ 
+                    error: 'No images found on this page.',
+                    images: [],
+                    fallback: 'The post may be private. Please use the "Paste Image URLs" method below.'
+                }, { status: 200 });
+            }
+
             return NextResponse.json({ 
                 images: uniqueImages,
                 count: uniqueImages.length,
@@ -109,9 +144,9 @@ export async function POST(request: Request) {
         } catch (fetchError) {
             console.error('Fetch error:', fetchError);
             return NextResponse.json({ 
-                error: 'Failed to fetch Facebook page. It may be private or require login.',
+                error: 'Facebook is blocking automated access.',
                 images: [],
-                fallback: 'Please use the "Paste Image URLs" tab and copy image addresses manually.'
+                fallback: 'Please use the "Paste Image URLs" method below. Right-click on Facebook images → "Copy image address" and paste them.'
             }, { status: 200 });
         }
 
@@ -119,7 +154,8 @@ export async function POST(request: Request) {
         console.error('API error:', error);
         return NextResponse.json({ 
             error: 'Failed to process request',
-            images: [] 
+            images: [],
+            fallback: 'Please use the "Paste Image URLs" method below.'
         }, { status: 500 });
     }
 }
