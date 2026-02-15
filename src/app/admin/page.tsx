@@ -2687,7 +2687,8 @@ const AdminDashboard = () => {
                                             {isSaving ? `Adding ${bulkGalleryImages.length} Photos...` : isUploading ? 'Uploading...' : `Add ${bulkGalleryImages.length} Photos to Gallery`}
                                         </button>
                                     </div>
-                                ) : galleryMode === 'facebook' ? (
+                                )}
+                                {galleryMode === 'facebook' && (
                                     <div className="space-y-6">
                                         {/* Facebook Import Section */}
                                         <div className="space-y-2">
@@ -2822,7 +2823,7 @@ const AdminDashboard = () => {
                                             {isSaving ? `Adding ${parsedFacebookImages.length} Photos...` : `Add ${parsedFacebookImages.length} Facebook Photos to Gallery`}
                                         </button>
                                     </div>
-                                ) : null}
+                                )}
                             </motion.div>
                         </motion.div>
                     )}
