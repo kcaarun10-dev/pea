@@ -3452,10 +3452,11 @@ const AdminDashboard = () => {
                                     </div>
                                 </form>
                             </motion.div>
+                        </motion.div>
                         )}
                     )}
                 </AnimatePresence>
-            </div>
+            </main>
         </div>
     );
 }
