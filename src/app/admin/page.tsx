@@ -50,6 +50,7 @@ const AdminDashboard = () => {
     const [bulkGalleryImages, setBulkGalleryImages] = useState<{name: string, url: string}[]>([]);
     const [bulkGalleryCategory, setBulkGalleryCategory] = useState('School Events');
     const [facebookUrls, setFacebookUrls] = useState('');
+    const [facebookShareUrl, setFacebookShareUrl] = useState('');
     const [parsedFacebookImages, setParsedFacebookImages] = useState<{name: string, url: string}[]>([]);
     const [newFaculty, setNewFaculty] = useState({
         name: '', role: '', dept: '', image: '', email: '', phone: '',
@@ -2703,6 +2704,67 @@ const AdminDashboard = () => {
                                                 <option>Sports</option>
                                                 <option>Classrooms</option>
                                             </select>
+                                        </div>
+
+                                        {/* Share Link Scraper */}
+                                        <div className="space-y-2 p-4 bg-accent/5 rounded-2xl border border-accent/20">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-accent rounded-full"></span>
+                                                Auto-Extract from Share Link
+                                            </label>
+                                            <p className="text-[10px] text-gray-400 font-medium">Paste a Facebook share link like https://www.facebook.com/share/p/...</p>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    className="flex-1 px-4 py-3 rounded-xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300 text-sm"
+                                                    placeholder="https://www.facebook.com/share/p/1FpCcBHyv9/"
+                                                    value={facebookShareUrl}
+                                                    onChange={(e) => setFacebookShareUrl(e.target.value)}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={async () => {
+                                                        if (!facebookShareUrl.trim()) {
+                                                            alert('Please paste a Facebook share link');
+                                                            return;
+                                                        }
+                                                        setIsUploading(true);
+                                                        try {
+                                                            const res = await fetch('/api/scrape-facebook', {
+                                                                method: 'POST',
+                                                                headers: { 'Content-Type': 'application/json' },
+                                                                body: JSON.stringify({ url: facebookShareUrl })
+                                                            });
+                                                            const data = await res.json();
+                                                            if (data.images && data.images.length > 0) {
+                                                                setParsedFacebookImages(data.images);
+                                                                alert(`Found ${data.images.length} images from the post!`);
+                                                            } else if (data.error) {
+                                                                alert(data.error + (data.fallback ? '\n\n' + data.fallback : ''));
+                                                            } else {
+                                                                alert('No images found. The post may be private or require login.');
+                                                            }
+                                                        } catch (error) {
+                                                            alert('Failed to scrape images. Please try manual method below.');
+                                                        } finally {
+                                                            setIsUploading(false);
+                                                        }
+                                                    }}
+                                                    disabled={isUploading || !facebookShareUrl.trim()}
+                                                    className="px-4 py-3 bg-primary text-white rounded-xl hover:bg-primary/90 transition-all font-black text-[10px] tracking-widest disabled:opacity-50"
+                                                >
+                                                    {isUploading ? 'Scraping...' : 'Scrape'}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="relative">
+                                            <div className="absolute inset-0 flex items-center">
+                                                <div className="w-full border-t border-gray-200"></div>
+                                            </div>
+                                            <div className="relative flex justify-center">
+                                                <span className="px-2 bg-white text-[10px] text-gray-400 font-bold uppercase">OR paste manually</span>
+                                            </div>
                                         </div>
                                         
                                         <div className="space-y-2">
