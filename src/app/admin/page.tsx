@@ -49,6 +49,7 @@ const AdminDashboard = () => {
     const [galleryMode, setGalleryMode] = useState<'single' | 'bulk' | 'facebook'>('single');
     const [bulkGalleryImages, setBulkGalleryImages] = useState<{name: string, url: string}[]>([]);
     const [bulkGalleryCategory, setBulkGalleryCategory] = useState('School Events');
+    const [bulkGalleryTitle, setBulkGalleryTitle] = useState('');
     const [facebookUrls, setFacebookUrls] = useState('');
     const [facebookShareUrl, setFacebookShareUrl] = useState('');
     const [parsedFacebookImages, setParsedFacebookImages] = useState<{name: string, url: string}[]>([]);
@@ -2569,6 +2570,17 @@ const AdminDashboard = () => {
                                     <div className="space-y-6">
                                         {/* Bulk Upload Section */}
                                         <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Base Title for All Photos (Optional)</label>
+                                            <input
+                                                type="text"
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300"
+                                                placeholder="e.g. School Annual Day 2024 - images will be named 'School Annual Day 2024 1', 'School Annual Day 2024 2', etc."
+                                                value={bulkGalleryTitle}
+                                                onChange={(e) => setBulkGalleryTitle(e.target.value)}
+                                            />
+                                            <p className="text-[10px] text-gray-400 font-medium">Leave empty to use original file names</p>
+                                        </div>
+                                        <div className="space-y-2">
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Category for All Photos</label>
                                             <select
                                                 className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary appearance-none cursor-pointer"
@@ -2599,8 +2611,12 @@ const AdminDashboard = () => {
                                                             for (let i = 0; i < files.length; i++) {
                                                                 const url = await handleImageUpload(files[i]);
                                                                 if (url) {
+                                                                    const baseTitle = bulkGalleryTitle.trim() || files[i].name.replace(/\.[^/.]+$/, "");
+                                                                    const title = bulkGalleryImages.length + uploadedImages.length > 0 
+                                                                        ? `${baseTitle} ${uploadedImages.length + 1}` 
+                                                                        : baseTitle;
                                                                     uploadedImages.push({
-                                                                        name: files[i].name.replace(/\.[^/.]+$/, ""),
+                                                                        name: title,
                                                                         url: url
                                                                     });
                                                                 }
@@ -2692,6 +2708,17 @@ const AdminDashboard = () => {
                                 {galleryMode === 'facebook' && (
                                     <div className="space-y-6">
                                         {/* Facebook Import Section */}
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Base Title for All Photos (Optional)</label>
+                                            <input
+                                                type="text"
+                                                className="w-full px-6 py-4 rounded-2xl bg-muted border-none outline-none focus:ring-2 focus:ring-accent transition-all font-bold text-primary placeholder:text-gray-300"
+                                                placeholder="e.g. Cricket Tournament 2024 - images will be named 'Cricket Tournament 2024 1', 'Cricket Tournament 2024 2', etc."
+                                                value={bulkGalleryTitle}
+                                                onChange={(e) => setBulkGalleryTitle(e.target.value)}
+                                            />
+                                            <p className="text-[10px] text-gray-400 font-medium">Leave empty to use auto-generated names</p>
+                                        </div>
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Category for All Photos</label>
                                             <select
@@ -2889,13 +2916,18 @@ const AdminDashboard = () => {
                                                 setIsSaving(true);
                                                 let successCount = 0;
                                                 
-                                                for (const img of parsedFacebookImages) {
+                                                for (let i = 0; i < parsedFacebookImages.length; i++) {
+                                                    const img = parsedFacebookImages[i];
                                                     try {
+                                                        const baseTitle = bulkGalleryTitle.trim();
+                                                        const title = baseTitle 
+                                                            ? `${baseTitle} ${i + 1}`
+                                                            : img.name;
                                                         const res = await fetch('/api/gallery', {
                                                             method: 'POST',
                                                             headers: { 'Content-Type': 'application/json' },
                                                             body: JSON.stringify({
-                                                                title: img.name,
+                                                                title: title,
                                                                 src: img.url,
                                                                 category: bulkGalleryCategory
                                                             })
