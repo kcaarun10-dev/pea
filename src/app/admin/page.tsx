@@ -3454,9 +3454,10 @@ const AdminDashboard = () => {
                             </motion.div>
                         </motion.div>
                         )}
-                    )}
                 </AnimatePresence>
             </main>
         </div>
     );
-}
+};
+
+export default AdminDashboard;
